@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "struct/stage.h"
+#include "instance/chessboard.h"
 
 namespace Ui {
     class MainWindow233;
@@ -22,8 +24,13 @@ protected:
 
 private:
     Ui::MainWindow233 *ui;
+
     bool flag = false;
     QPainterPath *path;
+
+    stage *sta;
+    chessboard *cb;
+    QGraphicsScene *gScene;
 };
 
 #endif // MAINWINDOW_H

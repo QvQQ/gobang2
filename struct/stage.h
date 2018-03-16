@@ -17,7 +17,7 @@ class stage {
 
 public:
 
-    explicit stage(const string &name);
+    stage(const string &name);
 
     ~stage();
 
