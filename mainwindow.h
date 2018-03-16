@@ -30,6 +30,7 @@ private:
 
     stage *sta;
     chessboard *cb;
+    QGraphicsView  *gv;
     QGraphicsScene *gScene;
 };
 

@@ -7,6 +7,7 @@
 
 #include "../struct/actor.h"
 #include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 
 class chessboard : public actor {
 
@@ -22,6 +23,7 @@ public:
     int  getSize();
     void resize(int size);
 
+    QGraphicsPixmapItem *pixitem;
 private:
     QGraphicsScene *gScene;
     int size;

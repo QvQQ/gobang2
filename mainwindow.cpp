@@ -5,6 +5,7 @@
 #include <QPainter>
 #include "instance/chessboard.h"
 #include "struct/stage.h"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -40,13 +41,18 @@ MainWindow::MainWindow(QWidget *parent) :
     this->path = new QPainterPath();
     // this->ui->graphicsView->re
 
-    this->gScene = new QGraphicsScene(this->ui->graphicsView);
-    this->ui->graphicsView->setScene(this->gScene);
-    //this->ui->graphicsView->setSceneRect(0, 0, 100, 100);
+    this->gv = this->ui->graphicsView;
+    this->gScene = new QGraphicsScene(this->gv);
+    this->gv->setScene(this->gScene);
+    this->gv->setSceneRect(0, 0, gv->width(), gv->height());
+
+    this->gScene->addLine(-gv->width(), -gv->height(), gv->width(), gv->height());
+    this->gScene->addLine(0, 0, 20, 0);
+
     this->sta = new stage("STAGE");
     this->cb  = new chessboard(this->gScene, "CHESSBOARD", 15);
-    this->sta->addActor(*cb);
-    //this->cb->doDraw();
+
+    //this->sta->addActor(*cb);
 
     statusBar();
 }
@@ -58,6 +64,8 @@ void MainWindow::open() {
 void MainWindow::paintEvent(QPaintEvent *event) {
 
       QMainWindow::paintEvent(event);
+      //gv->fitInView(this->gScene->itemsBoundingRect(), Qt::KeepAspectRatio);
+
 //    QPainter painter(this);
 
 //    //painter.setWindow(0, 0, this->width()/2, this->height()/2);

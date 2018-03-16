@@ -1,11 +1,20 @@
 #include "chessboard.h"
 #include <QGraphicsScene>
+#include <QGraphicsEllipseItem>
+#include <QGraphicsView>
 
 chessboard::chessboard(QGraphicsScene *gScene, string name, int size) : actor(name, position(0, 0)), gScene(gScene), size(size) {
 
-    this->gScene->addEllipse(23, 23, 200, 200, QPen(Qt::black, 5, Qt::DashDotDotLine, Qt::RoundCap));
-    //this->
-    //this->gView->setSceneRect();
+    //QGraphicsEllipseItem *ellitem;
+    //ellitem = this->gScene->addEllipse(23, 23, 200, 200, QPen(Qt::black, 5, Qt::DashDotDotLine, Qt::RoundCap));
+    //ellitem->setVisible(false);
+
+    QPixmap *pm = new QPixmap(":/images/back");
+    *pm = pm->scaled(static_cast<QGraphicsView*>(this->gScene->parent())->width(),
+                     static_cast<QGraphicsView*>(this->gScene->parent())->height(),
+                     Qt::IgnoreAspectRatio,
+                     Qt::SmoothTransformation);
+    pixitem = this->gScene->addPixmap(*pm);
 }
 
 chessboard::~chessboard() {
