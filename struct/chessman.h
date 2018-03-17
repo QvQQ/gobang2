@@ -6,8 +6,9 @@
 #define GOBANG_CHESSMAN_H
 
 #include "../struct/actor.h"
+#include <QGraphicsPixmapItem>
 
-class chessman : public actor {
+class chessman : public QGraphicsPixmapItem, public actor {
 
 public:
 

@@ -35,7 +35,14 @@ SOURCES += \
     struct/stage.cpp \
     struct/position.cpp \
     strategy/gobang2.c \
-    strategy/playchess.cpp
+    strategy/playchess.cpp \
+    strategy/playchess.cpp \
+    struct/chessboard.cpp \
+    struct/chessman.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    use.cpp \
+    strategy/gobang2.c
 
 HEADERS += \
     mainwindow.h \
@@ -44,7 +51,11 @@ HEADERS += \
     struct/actor.h \
     struct/stage.h \
     struct/position.h \
-    strategy/playchess.h
+    strategy/playchess.h \
+    strategy/playchess.h \
+    struct/chessboard.h \
+    struct/chessman.h \
+    mainwindow.h
 
 FORMS += \
         mainwindow.ui

@@ -9,7 +9,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 
-class chessboard : public actor {
+class chessboard : public QGraphicsScene, public actor {
 
 public:
 
