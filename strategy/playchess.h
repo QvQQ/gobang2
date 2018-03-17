@@ -5,7 +5,16 @@
 #ifndef GOBANG_CHESSBOARD_H
 #define GOBANG_CHESSBOARD_H
 
-#include "../struct/position.h"
+#include <ostream>
+
+using std::ostream;
+
+struct position {
+    int x = 0, y = 0;
+
+    position(int x, int y);
+    friend ostream &operator<<(ostream &out, const position &p);
+};
 
 class chessboard {  // black: 1  white: -1
 

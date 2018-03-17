@@ -5,7 +5,6 @@
 #ifndef GOBANG_CHESSBOARD_H
 #define GOBANG_CHESSBOARD_H
 
-#include "../struct/actor.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 

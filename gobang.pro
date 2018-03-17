@@ -28,34 +28,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    use.cpp \
-    instance/chessboard.cpp \
-    instance/chessman.cpp \
-    struct/actor.cpp \
-    struct/stage.cpp \
-    struct/position.cpp \
+    struct/Chessboard.cpp \
+    struct/Chessman.cpp \
     strategy/gobang2.c \
     strategy/playchess.cpp \
-    strategy/playchess.cpp \
-    struct/chessboard.cpp \
-    struct/chessman.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    use.cpp \
-    strategy/gobang2.c
 
 HEADERS += \
     mainwindow.h \
-    instance/chessboard.h \
-    instance/chessman.h \
-    struct/actor.h \
-    struct/stage.h \
-    struct/position.h \
+    struct/Chessboard.h \
+    struct/Chessman.h \
     strategy/playchess.h \
-    strategy/playchess.h \
-    struct/chessboard.h \
-    struct/chessman.h \
-    mainwindow.h
 
 FORMS += \
         mainwindow.ui

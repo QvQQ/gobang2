@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "struct/stage.h"
-#include "instance/chessboard.h"
+#include <QGraphicsView>
+#include "struct/Chessboard.h"
 
 namespace Ui {
     class MainWindow233;
@@ -19,19 +19,11 @@ public:
 
     void open();
 
-protected:
-    void paintEvent(QPaintEvent *);
-
 private:
     Ui::MainWindow233 *ui;
 
-    bool flag = false;
-    QPainterPath *path;
-
-    stage *sta;
-    chessboard *cb;
-    QGraphicsView  *gv;
-    QGraphicsScene *gScene;
+    Chessboard *chessboard;
+    QGraphicsView *gv;
 };
 
 #endif // MAINWINDOW_H
