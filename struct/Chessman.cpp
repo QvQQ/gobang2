@@ -12,27 +12,27 @@ Chessman::Chessman(int w, int h) : state(this->None){
     this->setShapeMode(QGraphicsPixmapItem::BoundingRectShape);
     //this->set;
     ///////////////
-    this->pm.none = new QPixmap(w, h);
-    this->pm.none->fill(Qt::transparent);
+    this->pm.none = QPixmap(w, h);
+    this->pm.none.fill(Qt::transparent);
     ///////////////
-    this->pm.redcircle = new QPixmap(w, h);
-    this->pm.redcircle->fill(Qt::transparent);
+    this->pm.redcircle = QPixmap(w, h);
+    this->pm.redcircle.fill(Qt::transparent);
 
-    QPainter pter(this->pm.redcircle);
+    QPainter pter(&this->pm.redcircle);
     pter.setPen(QPen(Qt::black, 2));
     pter.setBrush(Qt::red);
-    pter.fillRect(this->pm.redcircle->rect(), Qt::transparent);
+    pter.fillRect(this->pm.redcircle.rect(), Qt::transparent);
+    pter.setRenderHint(QPainter::Antialiasing);
     pter.drawEllipse(w/3, h/3, w/3, h/3);
     ///////////////
-    this->pm.black = new QPixmap(":/images/black");
-    *this->pm.black = this->pm.black->scaled(w, h);
-    this->pm.black->fill(Qt::transparent);
-    this->ppshape.addEllipse(this->pm.black->rect());
+    this->pm.black = QPixmap(":/images/black");
+    this->pm.black = this->pm.black.scaled(w*0.9, h*0.9, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    this->ppshape.addEllipse(this->pm.black.rect());
 
 //  this->pm.white = new QPixmap(w, h);
 //  this->pm.white->fill(Qt::transparent);
 
-    this->setPixmap(*this->pm.none);
+    this->setPixmap(this->pm.none);
 }
 
 Chessman::~Chessman() {
@@ -43,7 +43,7 @@ void Chessman::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     std::cout << "enter:" << event->pos().x() << ", " << event->pos().y() << std::endl;
 
     if (this->state == this->None) {  // None -> Redcircle
-        this->setPixmap(*this->pm.redcircle);
+        this->setPixmap(this->pm.redcircle);
         this->state = this->Redcircle;
     }
 }
@@ -52,13 +52,20 @@ void Chessman::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
     std::cout << "leave:" << event->pos().x() << ", " << event->pos().y() << std::endl;
 
     if (this->state == this->Redcircle) {
-        this->setPixmap(*this->pm.none);
+        this->setPixmap(this->pm.none);
         this->state = this->None;
     }
 }
 
 void Chessman::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     std::cout << "press:" << event->pos().x() << ", " << event->pos().y() << std::endl;
+
+    if (this->state == this->Redcircle) {
+        this->setPixmap(this->pm.black);
+        this->state = this->Black;
+        this->setAcceptHoverEvents(false);
+        this->setAcceptedMouseButtons(0);
+    }
 }
 
 QPainterPath Chessman::shape() const {

@@ -20,7 +20,7 @@
       <x>0</x>
       <y>0</y>
       <width>661</width>
-      <height>501</height>
+      <height>502</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="9,5">
@@ -63,7 +63,7 @@
         <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
        <property name="renderHints">
-        <set>QPainter::HighQualityAntialiasing|QPainter::TextAntialiasing</set>
+        <set>QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
        </property>
       </widget>
      </item>

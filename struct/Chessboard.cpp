@@ -16,14 +16,13 @@ Chessboard::Chessboard(int size, QGraphicsView *gv) : QGraphicsScene(gv), size(s
     this->pm_back = new QPixmap(":/images/back");
     gv->setBackgroundBrush(pm_back->scaled(gv->width(), gv->height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
+    int w = 32, h = 32;
+
     for (int i = 0; i < this->size; ++i) {
         QList<Chessman *> temp;
         for (int j = 0; j < this->size; ++j) {
-
-            int w = 32, h = 32;
             Chessman *gcm = new Chessman(w, h);
             gcm->setPos(27 + w*j - w/2, 27 + h*i - h/2);
-
             this->addItem(gcm);
             temp.append(gcm);
         }
@@ -41,8 +40,6 @@ Chessboard::~Chessboard() {
 void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
     std::cout << "X:" << event->scenePos().x() << " Y:" << event->scenePos().y() << std::endl;
-
-    this->sendEvent(this->itemAt(event->pos(), QTransform()), event);
 
     QGraphicsScene::mousePressEvent(event);
 }

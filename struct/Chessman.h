@@ -27,10 +27,10 @@ private:
     State state;
 
     struct {
-        QPixmap *none;
-        QPixmap *redcircle;
-        QPixmap *white;
-        QPixmap *black;
+        QPixmap none;
+        QPixmap redcircle;
+        QPixmap white;
+        QPixmap black;
     } pm;
 
     QPainterPath ppshape;
