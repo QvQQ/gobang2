@@ -6,6 +6,7 @@
 #define GOBANG_CHESSBOARD_H
 
 #include <QGraphicsScene>
+#include "struct/Chessman.h"
 
 class Chessboard : public QGraphicsScene{
 
@@ -19,7 +20,7 @@ public:
 private:
     int size;
     QPixmap *pm_back;
-    QList<QGraphicsPixmapItem*> pmi_redcircles;
+    QList<QList<Chessman *> > pmi_chessmen;
 };
 
 #endif //GOBANG_CHESSBOARD_H

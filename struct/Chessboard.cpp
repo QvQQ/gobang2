@@ -6,6 +6,8 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QPaintEngine>
+#include <QList>
+#include "struct/Chessman.h"
 
 #include <iostream>
 
@@ -15,32 +17,32 @@ Chessboard::Chessboard(int size, QGraphicsView *gv) : QGraphicsScene(gv), size(s
     gv->setBackgroundBrush(pm_back->scaled(gv->width(), gv->height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
     for (int i = 0; i < this->size; ++i) {
+        QList<Chessman *> temp;
         for (int j = 0; j < this->size; ++j) {
-            QPixmap pm(32, 32);
-            pm.fill(Qt::transparent);
 
-            QPainter pter(&pm);
-            pter.setPen(QPen(Qt::black, 2));
-            pter.setBrush(Qt::red);
-            pter.fillRect(pm.rect(), Qt::transparent);
-            pter.drawEllipse(pm.width()/3, pm.height()/3, pm.width()/3, pm.height()/3);
+            int w = 32, h = 32;
+            Chessman *gcm = new Chessman(w, h);
+            gcm->setPos(27 + w*j - w/2, 27 + h*i - h/2);
 
-            QGraphicsPixmapItem *gpi = new QGraphicsPixmapItem(pm);
-            gpi->setPos(27 + pm.width()*j - pm.width()/2, 27 + pm.height()*i - pm.height()/2);
-
-            this->addItem(gpi);
-            this->pmi_redcircles.append(gpi);
+            this->addItem(gcm);
+            temp.append(gcm);
         }
+        this->pmi_chessmen.append(temp);
     }
 }
 
 Chessboard::~Chessboard() {
     delete this->pm_back;
-    for (auto pmi : this->pmi_redcircles)
-        delete pmi;
+    for (auto &pmi : this->pmi_chessmen)
+        for (auto &pmii : pmi)
+            delete pmii;
 }
 
 void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
     std::cout << "X:" << event->scenePos().x() << " Y:" << event->scenePos().y() << std::endl;
+
+    this->sendEvent(this->itemAt(event->pos(), QTransform()), event);
+
+    QGraphicsScene::mousePressEvent(event);
 }
