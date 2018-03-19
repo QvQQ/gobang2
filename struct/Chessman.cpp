@@ -10,11 +10,11 @@ Chessman::Chessman(int w, int h) : state(this->None){
 
     this->setAcceptHoverEvents(true);
     this->setShapeMode(QGraphicsPixmapItem::BoundingRectShape);
-    //this->set;
-    ///////////////
+    /////////////// pm.none
     this->pm.none = QPixmap(w, h);
     this->pm.none.fill(Qt::transparent);
-    ///////////////
+
+    /////////////// pm.redcircle
     this->pm.redcircle = QPixmap(w, h);
     this->pm.redcircle.fill(Qt::transparent);
 
@@ -24,14 +24,17 @@ Chessman::Chessman(int w, int h) : state(this->None){
     pter.fillRect(this->pm.redcircle.rect(), Qt::transparent);
     pter.setRenderHint(QPainter::Antialiasing);
     pter.drawEllipse(w/3, h/3, w/3, h/3);
-    ///////////////
+
+    /////////////// pm.black
     this->pm.black = QPixmap(":/images/black");
     this->pm.black = this->pm.black.scaled(w*0.9, h*0.9, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     this->ppshape.addEllipse(this->pm.black.rect());
 
-//  this->pm.white = new QPixmap(w, h);
-//  this->pm.white->fill(Qt::transparent);
+    /////////////// pm.white
+    this->pm.white = QPixmap(":/images/white");
+    this->pm.white = this->pm.white.scaled(w*0.9, h*0.9, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
+    /////////////// set default
     this->setPixmap(this->pm.none);
 }
 

@@ -15,6 +15,7 @@ public:
     Chessboard(int size, QGraphicsView *gv);
     ~Chessboard();
 
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:

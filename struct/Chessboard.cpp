@@ -37,6 +37,10 @@ Chessboard::~Chessboard() {
             delete pmii;
 }
 
+void Chessboard::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+    return;
+}
+
 void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
     std::cout << "X:" << event->scenePos().x() << " Y:" << event->scenePos().y() << std::endl;
