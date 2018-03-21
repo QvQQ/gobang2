@@ -1,7 +1,10 @@
 #include <iostream>
 #include "playchess.h"
+extern "C" {
+#include "gobang2.h"
+}
 
-using std::clog;
+using std::cout;
 using std::endl;
 using std::ostream;
 
@@ -12,37 +15,49 @@ ostream &operator<<(ostream &out, const position &p) {
     return out;
 }
 
-int chessboard::setChessman(position pos) {
+playchess::playchess() : round(0) {
+    ;
+}
 
-    clog << "No." << (round + 1) << " at " << &pos << " with ";
+int playchess::setChessman(position pos, const int side) {
 
-    if (pos.x < this->size && pos.x >= 0 &&
-            pos.y < this->size && pos.y >= 0 && board[pos.x][pos.y] == 0) {
+    cout << "No." << (round + 1) << " at " << pos << " with " << (side == 1 ? "black." : "white.") << endl;
 
-        this->board[pos.x][pos.y] = this->getSide();
+    if (pos.x <= this->size && pos.x > 0 &&
+        pos.y <= this->size && pos.y > 0 && board[pos.x - 1][pos.y - 1] == 0) {
+
+        this->board[pos.x - 1][pos.y - 1] = side;
         return ++round;
     }
-    clog << "wrong." << endl;
+    cout << "wrong." << endl;
     return 0;
 }
 
-position chessboard::solve() {  // temporary, no AI
-
-    for(int i = 0; i < this->size; ++i)
-        for(int j = 0; j < this->size; ++j)
-            if(!this->board[i][j])
-                return {i, j};
-    return {-1, -1};
+int playchess::setChessman(position pos) {
+    return this->setChessman(pos, getSide());
 }
 
-int chessboard::getSide() {
+position playchess::solve() {  // temporary, no AI
+
+    Board *bd = bd_cre(this->board);
+    Point pos = workout(bd, DEP, NULL);
+    this->setChessman({pos.x, pos.y});
+
+    return {pos.x, pos.y};
+//    for(int i = 0; i < this->size; ++i)
+//        for(int j = 0; j < this->size; ++j)
+//            if(!this->board[i][j]) {
+//                this->setChessman({i + 1, j + 1});
+//                return {i + 1, j + 1};
+//            }
+//    return {-1, -1};
+}
+
+int playchess::getSide() {
 
     int sum = 0;
     for (auto &row : this->board)
         for (auto &col : row)
             sum += col;
-    clog << (-sum == 1 ? "black." : "white.") << endl;
-    return -sum;
+    return sum == 0 ? 1 : -1;
 }
-
-int chessboard::round = 0;

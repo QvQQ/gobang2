@@ -2,94 +2,37 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#define MAX_INT (((unsigned)(-1)) >> 1)
-#define MIN_INT (MAX_INT + 1)
-
-#define INCECO 10
-
-#define TS     10
-#define CON    5
-
-#define DEP    3
-#define RUL    "rules.txt"
-
-#define GT     0
-#define PL     0
-
-typedef enum {
-	Nil = 0, Black = 1, White = -1
-} Oval;
-
-typedef struct {
-	int weight;
-	Oval val;
-} Grid;
-
-typedef struct {
-	Grid grids[TS][TS];
-	int score;
-	int ngrid;
-} Board;
-
-typedef struct {
-	int x;
-	int y;
-} Point;
-
-typedef struct {
-	Oval val;
-	Oval who;
-	int  score;
-} Rule;
-
-typedef struct GameTree {
-	struct GameTree *prev;
-	struct GameTree **branch;
-	int _nbranch;
-	long _sleaf;
-	int depth;
-	int nleaf;
-	void *leaf;
-} GTree;
-
-Point  solve(Board *, const int, Board **);
-int    down(Board *, const Oval, const int, const int);
-GTree *init_rules(const char *);
-int    evaluate(Board *);
-int    isfinish(Board *, const int, const int);
-
-Board *bd_cpy(const Board *);
-Board *bd_cre(const int [TS][TS]);
-
-void   gt_prt(GTree *const, const int);
-GTree *gt_cre(const void *, const long);
-GTree *gt_add(GTree *const, const void *, const long);
-void   gt_del(GTree *);
+#include "gobang2.h"
 
 Oval aiVal = Nil; GTree *rules = NULL;
 
 int test() {
 
 	time_t start = time(NULL);
+    setbuf(stdout, NULL);
 	//////////////////////////////
 	int u[][TS] = {
-		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },  //  1~10
-	    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },  // 11~20
-	    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },  // 21~30
-	    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },  // 31~40
-	    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },  // 41~50
-	    { 0, 0, 0, 0, 0, 0, 0, 0, 1,-1 },  // 51~60
-	    { 0, 0, 0, 0, 0, 0, 0, 1, 0,-1 },  // 61~70
-	    { 0, 0, 0, 0, 0, 0, 0, 0, 0,-1 },  // 71~80
-	    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },  // 81~90
-		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },  // 91~100
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 	};
 
     Board *bd = NULL; GTree *gt; Point pos;
 
 	bd = bd_cre(u);
-    pos = solve(bd, DEP, &bd);
+    pos = workout(bd, DEP, &bd);
 
 	printf("\nRESULT:\n\n");
 	gt = gt_cre(&bd, sizeof(bd));
@@ -103,13 +46,13 @@ int test() {
 	return 0;
 }
 
-Point solve(Board *vbd, const int maxdep, Board **rbd) {
+Point workout(Board *vbd, const int maxdep, Board **rbd) {
 
 	Board *bd = NULL;
 	vbd->score = MIN_INT;
 	Point pos = { -1, -1 };
 
-	if (maxdep <= 0)
+    if (maxdep <= 0)
 		return pos;
 
 	int sum = 0;
@@ -117,11 +60,11 @@ Point solve(Board *vbd, const int maxdep, Board **rbd) {
 		for (int j = 0; j < TS; ++j)
 			sum += (int)(vbd->grids[i][j].val);
 
-	Oval nextVal = aiVal = sum ? White : Black;
+    Oval nextVal = aiVal = sum ? White : Black;
 	rules = init_rules(RUL);
 
-	for (int i = 0; i < TS; ++i) {
-		for (int j = 0; j < TS; ++j) {
+    for (int i = 0; i < TS; ++i) {
+        for (int j = 0; j < TS; ++j) {
 			if (vbd->grids[i][j].val == Nil) {
 				bd = bd_cpy(vbd);
 
@@ -141,6 +84,7 @@ Point solve(Board *vbd, const int maxdep, Board **rbd) {
 			}
 		}
 	}
+
 	return pos;
 }
 
@@ -173,14 +117,14 @@ int down(Board *vbd, const Oval nextVal, const int maxdep, const int curdep) {
 GTree *init_rules(const char *path) {
 
 	if (!path)
-		path = "rules.txt";
+        path = "rules.txt";
 
 	FILE *file = fopen(path, "r");
 
-	if (!file)
+    if (!file)
 		exit(-777);
 
-	char state[256] = { 0 };
+    char state[256] = { 0 };
 	int  score = 0;
 	char who = 'N';
 	Oval val = Nil;

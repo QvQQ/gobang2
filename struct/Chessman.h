@@ -12,19 +12,26 @@ class Chessman : public QGraphicsPixmapItem{
 
 public:
 
-    Chessman(int w, int h);
+    Chessman(QRect initpos);
     ~Chessman();
+
+    enum State {None = 0, RedCircle = 2, White = -1, Black = 1};
+
+    State getState() const;
+    void  setState(State state);
 
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    int type() const;
 
     QPainterPath shape() const;
 
+    QPoint getPos() const;
+
 private:
-    enum State{None, Redcircle, White, Black};
     State state;
+    QPoint pos;
 
     struct {
         QPixmap none;

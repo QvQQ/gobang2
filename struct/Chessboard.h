@@ -7,21 +7,28 @@
 
 #include <QGraphicsScene>
 #include "struct/Chessman.h"
+#include "strategy/playchess.h"
 
 class Chessboard : public QGraphicsScene{
 
 public:
 
-    Chessboard(int size, QGraphicsView *gv);
+    Chessboard(QGraphicsView *gv);
     ~Chessboard();
 
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    int size;
+
+    playchess player;
+
     QPixmap *pm_back;
+    QGraphicsPixmapItem *pmi_redcircle;
     QList<QList<Chessman *> > pmi_chessmen;
+    Chessman *lastMan;
+
+    enum {thinking, waiting} state = waiting;
+    Chessman::State lastVal = Chessman::Black;
 };
 
 #endif //GOBANG_CHESSBOARD_H

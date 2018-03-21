@@ -2,8 +2,8 @@
 // Created by cat on 18-1-30.
 //
 
-#ifndef GOBANG_CHESSBOARD_H
-#define GOBANG_CHESSBOARD_H
+#ifndef GOBANG_PLAYCHESS_H
+#define GOBANG_PLAYCHESS_H
 
 #include <ostream>
 
@@ -16,20 +16,23 @@ struct position {
     friend ostream &operator<<(ostream &out, const position &p);
 };
 
-class chessboard {  // black: 1  white: -1
+class playchess {  // black: 1  white: -1
 
 public:
 
+    playchess();
+
+    int setChessman(position pos, const int side);
     int setChessman(position pos);
     position solve(); // temporary
-
-private:
 
     int getSide();
 
     constexpr static int size = 15;
+
+private:
     int board[size][size] = {};
-    static int round;
+    int round;
 };
 
 #endif //GOBANG_CHESSBOARD_H

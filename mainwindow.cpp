@@ -25,9 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ////////////////////////////
 
     this->gv = this->ui->graphicsView;
-    this->chessboard = new Chessboard(15, this->gv);
+    this->chessboard = new Chessboard(this->gv);
     this->chessboard->addLine(-gv->width(), -gv->height(), gv->width(), gv->height());
-    this->chessboard->addLine(0, 0, 20, 0);
+
     this->gv->setScene(this->chessboard);
     this->gv->setSceneRect(0, 0, this->gv->width(), this->gv->height());
 
