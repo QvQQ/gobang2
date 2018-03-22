@@ -9,7 +9,7 @@
 #define TS     15
 #define CON    5
 
-#define DEP    2
+#define DEP    3
 #define RUL    "rules.txt"
 
 #define GT     0
@@ -20,14 +20,13 @@ typedef enum {
 } Oval;
 
 typedef struct {
-    int weight;
     Oval val;
 } Grid;
 
 typedef struct {
     Grid grids[TS][TS];
+    int weight[TS][TS];
     int score;
-    int ngrid;
 } Board;
 
 typedef struct {
@@ -54,7 +53,8 @@ typedef struct GameTree {
 int test();
 
 Point  workout(Board *, const int, Board **);
-int    down(Board *, const Oval, const int, const int);
+int    down(Board *, const Oval, const int, const int, int, int);
+Board *selectp(Board *);
 GTree *init_rules(const char *);
 int    evaluate(Board *);
 int    isfinish(Board *, const int, const int);

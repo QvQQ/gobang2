@@ -51,6 +51,7 @@ Point workout(Board *vbd, const int maxdep, Board **rbd) {
 	Board *bd = NULL;
 	vbd->score = MIN_INT;
 	Point pos = { -1, -1 };
+    int alpha = MIN_INT, beta = MAX_INT;
 
     if (maxdep <= 0)
 		return pos;
@@ -63,14 +64,16 @@ Point workout(Board *vbd, const int maxdep, Board **rbd) {
     Oval nextVal = aiVal = sum ? White : Black;
 	rules = init_rules(RUL);
 
+    vbd = selectp(vbd);
+
     for (int i = 0; i < TS; ++i) {
         for (int j = 0; j < TS; ++j) {
-			if (vbd->grids[i][j].val == Nil) {
+            if (vbd->grids[i][j].val == Nil && vbd->weight[i][j]) {
 				bd = bd_cpy(vbd);
 
 				bd->grids[i][j].val = nextVal;
 				bd->score = (maxdep - 1) && !isfinish(bd, i, j)
-                            ? down(bd, -nextVal, maxdep - 1, 1)
+                            ? down(bd, -nextVal, maxdep - 1, 1, alpha, beta)
 				            : evaluate(bd); ////
 				if (vbd->score < bd->score) {
 					pos.x = i + 1;
@@ -88,30 +91,60 @@ Point workout(Board *vbd, const int maxdep, Board **rbd) {
 	return pos;
 }
 
-int down(Board *vbd, const Oval nextVal, const int maxdep, const int curdep) {
+int down(Board *vbd, const Oval nextVal, const int maxdep, const int curdep, int alpha, int beta) {
 
-	int max = MIN_INT, min = MAX_INT;
 	Board *bd = NULL;
+    int isMax = !(curdep % 2);
+
+    vbd = selectp(vbd);
 
     for (int i = 0; i < TS; ++i) {
 		for (int j = 0; j < TS; ++j) {
-			if (vbd->grids[i][j].val == Nil) {
+            if (vbd->grids[i][j].val == Nil && vbd->weight[i][j]) {
 				bd = bd_cpy(vbd);
 
 				bd->grids[i][j].val = nextVal;
 				bd->score = (maxdep - 1 && !isfinish(bd, i, j))
-                            ? down(bd, -nextVal, maxdep - 1, curdep + 1)
+                            ? down(bd, -nextVal, maxdep - 1, curdep + 1, alpha, beta)
 				            : evaluate(bd);
 
-				max = bd->score > max ? bd->score : max;
-				min = bd->score < min ? bd->score : min;
+                if (isMax) alpha = alpha > bd->score ? alpha : bd->score;
+                else       beta  = beta  < bd->score ? beta  : bd->score;
+
+                if (alpha > beta) goto rs;
                 free(bd);
 			}
 		}
 	}
-	if (curdep % 2)
-		return min;
-	return max;
+rs:
+    if (isMax)
+        return alpha;
+    return beta;
+}
+
+Board *selectp(Board *vbd) {
+
+    for (int i = 0; i < TS; ++i) {
+        for (int j = 0; j < TS; ++j) {
+            if (vbd->grids[i][j].val != Nil) {
+                for (int k = -4; k <= 4; ++k) {
+
+                    if (i + k >= 0 && i + k < TS) {
+                        vbd->weight[i + k][j] = 1;
+                        if (j + k >= 0 && j + k < TS)
+                            vbd->weight[i + k][j + k] = 1;
+                    }
+                    if (j + k >= 0 && j + k < TS) {
+                        vbd->weight[i][j + k] = 1;
+                        if (i - k >= 0 && i - k < TS)
+                            vbd->weight[i - k][j + k] = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    return vbd;
 }
 
 GTree *init_rules(const char *path) {
@@ -353,25 +386,23 @@ int isfinish(Board *vbd, const int row, const int col) {
 }
 
 Board *bd_cpy(const Board *vbd) {
-	Board *bd = (Board *)memcpy(malloc(sizeof(Board)), vbd, sizeof(Board));
-	if (!bd) exit(-233);
-	return bd;
+    Board *bd = (Board *)malloc(sizeof(Board));
+    memcpy(bd->grids, vbd->grids, sizeof(bd->grids));
+    memset(bd->weight, 0, sizeof(bd->weight));
+    bd->score = vbd->score;
+    if (!bd) exit(-233);
+    return bd;
 }
 
 Board *bd_cre(const int undone[TS][TS]) {
 
 	Board *bd = calloc(1, sizeof(Board));
-	if (undone) {
-		for (int i = 0; i < TS; ++i) {
-			for (int j = 0; j < TS; ++j) {
+    if (undone) {
+        for (int i = 0; i < TS; ++i)
+            for (int j = 0; j < TS; ++j)
 				bd->grids[i][j].val = (Oval)undone[i][j];
-				if (bd->grids[i][j].val == Nil) ++bd->ngrid;
-			}
-		}
-	} else {
-		bd->ngrid = TS * TS;
-	}
-	return bd;
+    }
+    return bd;
 }
 
 void gt_prt(GTree *const gt, const int level) {
