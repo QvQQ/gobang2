@@ -9,7 +9,7 @@
 #define TS     15
 #define CON    5
 
-#define DEP    3
+#define DEP    2
 #define RUL    "rules.txt"
 
 #define GT     0
@@ -55,7 +55,7 @@ int test();
 Point  workout(Board *, const int, Board **);
 int    down(Board *, const Oval, const int, const int, int, int);
 Board *selectp(Board *);
-GTree *init_rules(const char *);
+void   init_rules(const char *);
 int    evaluate(Board *);
 int    isfinish(Board *, const int, const int);
 

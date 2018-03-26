@@ -6,6 +6,7 @@
 #define GOBANG_CHESSBOARD_H
 
 #include <QGraphicsScene>
+#include <QLabel>
 #include "struct/Chessman.h"
 #include "strategy/playchess.h"
 
@@ -13,21 +14,27 @@ class Chessboard : public QGraphicsScene{
 
 public:
 
-    Chessboard(QGraphicsView *gv);
+    Chessboard(QGraphicsView *gv, QLabel *label);
     ~Chessboard();
+
+    void updateScore();
+    void finish(int val);
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
 
+    void handleResult(position pos);
+
     playchess player;
 
+    QLabel *scoreLabel;
     QPixmap *pm_back;
     QGraphicsPixmapItem *pmi_redcircle;
     QList<QList<Chessman *> > pmi_chessmen;
     Chessman *lastMan;
 
-    enum {thinking, waiting} state = waiting;
+    enum {thinking, waiting, idling} state = waiting;
     Chessman::State lastVal = Chessman::Black;
 };
 

@@ -5,6 +5,8 @@
 #include "gobang2.h"
 
 Oval aiVal = Nil; GTree *rules = NULL;
+int blackScore = 0;
+int whiteScore = 0;
 
 int test() {
 
@@ -62,7 +64,6 @@ Point workout(Board *vbd, const int maxdep, Board **rbd) {
 			sum += (int)(vbd->grids[i][j].val);
 
     Oval nextVal = aiVal = sum ? White : Black;
-	rules = init_rules(RUL);
 
     vbd = selectp(vbd);
 
@@ -147,7 +148,7 @@ Board *selectp(Board *vbd) {
     return vbd;
 }
 
-GTree *init_rules(const char *path) {
+void init_rules(const char *path) {
 
 	if (!path)
         path = "rules.txt";
@@ -192,14 +193,14 @@ GTree *init_rules(const char *path) {
 	}
 	fclose(file);
 
-	return root;
+    rules = root;
 }
 
 int evaluate(Board *vbd) {
 
 	// Oval aiVal; Rule rules;
-	int blackScore = 0;
-	int whiteScore = 0;
+    blackScore = 0;
+    whiteScore = 0;
 	GTree *curgt = rules;
 	const Grid(*gbd)[TS] = vbd->grids;
 	
@@ -351,7 +352,8 @@ int isfinish(Board *vbd, const int row, const int col) {
 	if (oy <= TS - CON) {
 		for (k = sum = 0; k < CON; ++k)
 			sum += vbd->grids[ox][oy + k].val;
-		if (abs(sum) == CON) return 1;
+        if (sum == CON) return 1;
+        else if (sum == -CON) return -1;
 	}
 	// col:
 	ox = row; oy = col;
@@ -360,7 +362,8 @@ int isfinish(Board *vbd, const int row, const int col) {
 	if (ox <= TS - CON) {
 		for (k = sum = 0; k < CON; ++k)
 			sum += vbd->grids[ox + k][oy].val;
-		if (abs(sum) == CON) return 1;
+        if (sum == CON) return 1;
+        else if (sum == -CON) return -1;
 	}
 	// sla: 左下->右上
 	ox = row; oy = col;
@@ -370,7 +373,8 @@ int isfinish(Board *vbd, const int row, const int col) {
 	if (ox >= CON - 1 && oy <= TS - CON) {
 		for (k = sum = 0; k < CON; ++k)
 			sum += vbd->grids[ox - k][oy + k].val;
-		if (abs(sum) == CON) return 1;
+        if (sum == CON) return 1;
+        else if (sum == -CON) return -1;
 	}
 	// bsla: 左上->右下
 	ox = row; oy = col;
@@ -380,7 +384,8 @@ int isfinish(Board *vbd, const int row, const int col) {
 	if (ox <= TS - CON && oy <= TS - CON) {
 		for (k = sum = 0; k < CON; ++k)
 			sum += vbd->grids[ox + k][oy + k].val;
-		if (abs(sum) == CON) return 1;
+        if (sum == CON) return 1;
+        else if (sum == -CON) return -1;
 	}
 	return 0;
 }

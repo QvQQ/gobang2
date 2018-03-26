@@ -20,16 +20,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QMenu *QAQ = menuBar()->addMenu("QAQ");
     QAQ->addAction(action);
 
-    this->ui->pushButton->setText("draw");
-    this->ui->pushButton_2->setText("clear");
+    this->ui->pushButton->setText("start");
+    this->ui->pushButton_2->setText("stop");
     ////////////////////////////
-
     this->gv = this->ui->graphicsView;
-    this->chessboard = new Chessboard(this->gv);
+    this->chessboard = new Chessboard(this->gv, this->ui->score_label);
     this->chessboard->addLine(-gv->width(), -gv->height(), gv->width(), gv->height());
 
     this->gv->setScene(this->chessboard);
     this->gv->setSceneRect(0, 0, this->gv->width(), this->gv->height());
+
+    //this->ui->pushButton;
 
     statusBar();
 }

@@ -8,6 +8,7 @@ using std::cout;
 using std::endl;
 using std::ostream;
 
+position::position() : x(0), y(0) {}
 position::position(int x, int y) : x(x), y(y) {}
 
 ostream &operator<<(ostream &out, const position &p) {
@@ -16,7 +17,8 @@ ostream &operator<<(ostream &out, const position &p) {
 }
 
 playchess::playchess() : round(0) {
-    ;
+    qRegisterMetaType<position>("position");
+    init_rules(NULL);
 }
 
 int playchess::setChessman(position pos, const int side) {
@@ -27,6 +29,13 @@ int playchess::setChessman(position pos, const int side) {
         pos.y <= this->size && pos.y > 0 && board[pos.x - 1][pos.y - 1] == 0) {
 
         this->board[pos.x - 1][pos.y - 1] = side;
+
+        Board *bd = bd_cre(this->board);
+        evaluate(bd);
+        extern int blackScore, whiteScore;
+        this->curBlackScore = blackScore;
+        this->curWhiteScore = whiteScore;
+
         return ++round;
     }
     cout << "wrong." << endl;
@@ -34,23 +43,26 @@ int playchess::setChessman(position pos, const int side) {
 }
 
 int playchess::setChessman(position pos) {
-    return this->setChessman(pos, getSide());
+    int re = this->setChessman(pos, getSide());
+    return re;
 }
 
-position playchess::solve() {  // temporary, no AI
+position playchess::solve() {
 
     Board *bd = bd_cre(this->board);
     Point pos = workout(bd, DEP, NULL);
     this->setChessman({pos.x, pos.y});
 
     return {pos.x, pos.y};
-//    for(int i = 0; i < this->size; ++i)
-//        for(int j = 0; j < this->size; ++j)
-//            if(!this->board[i][j]) {
-//                this->setChessman({i + 1, j + 1});
-//                return {i + 1, j + 1};
-//            }
-//    return {-1, -1};
+}
+
+int playchess::isDone(position pos) {
+    Board *bd = bd_cre(this->board);
+    return isfinish(bd, pos.x - 1, pos.y - 1);
+}
+
+void playchess::run() {
+    emit this->resultReady(this->solve());
 }
 
 int playchess::getSide() {

@@ -7,12 +7,13 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPaintEngine>
 #include <QList>
+#include <QLabel>
 #include "struct/Chessman.h"
 #include "strategy/playchess.h"
 
 #include <iostream>
 
-Chessboard::Chessboard(QGraphicsView *gv) : QGraphicsScene(gv) {
+Chessboard::Chessboard(QGraphicsView *gv, QLabel *label) : QGraphicsScene(gv), scoreLabel(label) {
     int w = 32, h = 32;
     this->pm_back = new QPixmap(":/images/back");
     gv->setBackgroundBrush(pm_back->scaled(gv->width(), gv->height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
@@ -38,6 +39,43 @@ Chessboard::Chessboard(QGraphicsView *gv) : QGraphicsScene(gv) {
         }
         this->pmi_chessmen.append(temp);
     }
+    ///////////
+    this->connect(&this->player, &playchess::resultReady, this, &Chessboard::handleResult);
+    //this->connect(&this->player, &playchess::finished, ...)
+}
+
+void Chessboard::handleResult(position rspos) {
+    this->lastMan = this->pmi_chessmen[rspos.x - 1][rspos.y - 1];
+    this->lastMan->setState(static_cast<Chessman::State>(-this->lastVal));
+
+    this->pmi_redcircle->setPos(this->lastMan->scenePos());
+    this->pmi_redcircle->setZValue(233);
+    this->updateScore();
+    this->state = waiting;
+
+    int val = player.isDone(rspos);
+    if (val) {
+        this->state = idling;
+        finish(val);
+    }
+}
+
+void Chessboard::updateScore() {
+    QString score;
+    score.append("Black:");
+    score.append(QString::number(this->player.curBlackScore));
+    score.append("\n");
+    score.append("White:");
+    score.append(QString::number(this->player.curWhiteScore));
+    this->scoreLabel->setText(score);
+}
+
+void Chessboard::finish(int val) {
+
+    std::cout << ((val == 1) ? "Black" : "White") << " wins the game!" << std::endl;
+    this->scoreLabel->setText(((val == 1) ? "Black wins!" : "White wins!"));
+
+    return;
 }
 
 Chessboard::~Chessboard() {
@@ -56,20 +94,22 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         if (this->lastMan->getState() == Chessman::RedCircle) {
             this->state = thinking;
             this->lastMan->setState(this->lastVal);
-            this->player.setChessman({this->lastMan->getPos().x(), this->lastMan->getPos().y()}, this->lastVal);
-
+            position pos = {this->lastMan->getPos().x(), this->lastMan->getPos().y()};
+            this->player.setChessman(pos, this->lastVal);
+            this->updateScore();
             this->pmi_redcircle->setPos(this->lastMan->scenePos());
             this->pmi_redcircle->setZValue(233);
 
-            // start a new thread and solve
-            position rspos = player.solve();
-            this->lastMan = this->pmi_chessmen[rspos.x - 1][rspos.y - 1];
-            this->lastMan->setState(static_cast<Chessman::State>(-this->lastVal));
-
-            this->pmi_redcircle->setPos(this->lastMan->scenePos());
-            this->pmi_redcircle->setZValue(233);
-
-            this->state = waiting;
+            int val = player.isDone(pos);
+            if (val) {
+                this->state = idling;
+                this->finish(val);
+            } else {
+                // start a new thread and solve
+                if (this->player.isFinished() || !this->player.isRunning()) {
+                    player.start();
+                }
+            }
         }
     }
     QGraphicsScene::mousePressEvent(event);
