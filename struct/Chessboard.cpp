@@ -17,7 +17,7 @@ Chessboard::Chessboard(QGraphicsView *gv, QLabel *label) : QGraphicsScene(gv), s
     int w = 32, h = 32;
     this->pm_back = new QPixmap(":/images/back");
     gv->setBackgroundBrush(pm_back->scaled(gv->width(), gv->height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    ///////////
+
     auto Q = QPixmap(w, h);
     Q.fill(Qt::transparent);
     QPainter pter(&Q);
@@ -28,7 +28,7 @@ Chessboard::Chessboard(QGraphicsView *gv, QLabel *label) : QGraphicsScene(gv), s
     pter.drawEllipse(w/3.0, h/3.0, w/3.0, h/3.0);
     this->pmi_redcircle = this->addPixmap(Q);
     this->pmi_redcircle->setPos(-20, -20);
-    ///////////
+
     for (int i = 0; i < this->player.size; ++i) {
         QList<Chessman *> temp;
         for (int j = 0; j < this->player.size; ++j) {
@@ -39,7 +39,7 @@ Chessboard::Chessboard(QGraphicsView *gv, QLabel *label) : QGraphicsScene(gv), s
         }
         this->pmi_chessmen.append(temp);
     }
-    ///////////
+
     this->connect(&this->player, &playchess::resultReady, this, &Chessboard::handleResult);
     //this->connect(&this->player, &playchess::finished, ...)
 }
@@ -53,10 +53,10 @@ void Chessboard::handleResult(position rspos) {
     this->updateScore();
     this->state = waiting;
 
-    int val = player.isDone(rspos);
-    if (val) {
+    position pos; Direc direc;
+    if (player.isDone(&direc, &pos)) {
         this->state = idling;
-        finish(val);
+        finish(direc, pos);
     }
 }
 
@@ -70,12 +70,67 @@ void Chessboard::updateScore() {
     this->scoreLabel->setText(score);
 }
 
-void Chessboard::finish(int val) {
+void Chessboard::finish(Direc direc, position pos) {
 
-    std::cout << ((val == 1) ? "Black" : "White") << " wins the game!" << std::endl;
-    this->scoreLabel->setText(((val == 1) ? "Black wins!" : "White wins!"));
+    std::cout << ((this->lastVal == Chessman::White) ? "Black" : "White") << " wins the game!"
+              << " at (" << pos.x << ", " << pos.y << ")" << std::endl;
+    this->scoreLabel->setText(((this->lastVal == Chessman::White) ? "Black wins!" : "White wins!"));
+
+    if (this->pmi_winLine != nullptr) {
+        delete this->pmi_winLine;
+        this->pmi_winLine = nullptr;
+    }
+
+    int w = 32;
+    switch (direc) {
+        case L:
+            this->pmi_winLine = this->addLine(0, 0, w*5, 0, QPen(QBrush(Qt::red), w/6));
+            this->pmi_winLine->setTransformOriginPoint(0, -w/4);
+            this->pmi_winLine->setRotation(0);
+            this->pmi_winLine->setPos(pos.y * w - w/2 - w/4, pos.x * w - 6);
+            break;
+        case U:
+            this->pmi_winLine = this->addLine(0, 0, w*5, 0, QPen(QBrush(Qt::red), w/6));
+            this->pmi_winLine->setTransformOriginPoint(0, -w/4);
+            this->pmi_winLine->setRotation(90);
+            this->pmi_winLine->setPos(pos.y * w + 1, pos.x * w - w/2);
+            break;
+        case LB:
+            this->pmi_winLine = this->addLine(0, 0, w*7, 0, QPen(QBrush(Qt::red), w/6));
+            this->pmi_winLine->setTransformOriginPoint(0, -w/4);
+            this->pmi_winLine->setRotation(-45);
+            this->pmi_winLine->setPos(pos.y * w - w + w/8, pos.x * w + w/2 - w/8);
+            break;
+        case LU:
+            this->pmi_winLine = this->addLine(0, 0, w*7, 0, QPen(QBrush(Qt::red), w/6));
+            this->pmi_winLine->setTransformOriginPoint(0, -w/4);
+            this->pmi_winLine->setRotation(45);
+            this->pmi_winLine->setPos(pos.y * w - w/2 - w/8 + 3, pos.x * w - w/2 - w/8);
+            break;
+    }
+
+    this->pmi_winLine->setVisible(true);
+    this->pmi_winLine->setZValue(233);
 
     return;
+}
+
+void Chessboard::restart() {
+    std::cout << "Restarted!" << std::endl;
+
+    auto items = this->items();
+    for (auto item : items) {
+        if (item->type() == 65535 + 233) {
+            auto man = dynamic_cast<Chessman *>(item);
+            man->setState(Chessman::None);
+        }
+    }
+
+    this->player.restart();
+    this->pmi_redcircle->setPos(-20, -20);
+    delete this->pmi_winLine;
+    this->pmi_winLine = nullptr;
+    this->state = waiting;
 }
 
 Chessboard::~Chessboard() {
@@ -100,10 +155,10 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             this->pmi_redcircle->setPos(this->lastMan->scenePos());
             this->pmi_redcircle->setZValue(233);
 
-            int val = player.isDone(pos);
-            if (val) {
+            position posa; Direc direc;
+            if (player.isDone(&direc, &posa)) {
                 this->state = idling;
-                this->finish(val);
+                finish(direc, posa);
             } else {
                 // start a new thread and solve
                 if (this->player.isFinished() || !this->player.isRunning()) {

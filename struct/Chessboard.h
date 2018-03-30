@@ -18,7 +18,9 @@ public:
     ~Chessboard();
 
     void updateScore();
-    void finish(int val);
+    void finish(Direc direc, position pos);
+
+    void restart();
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
@@ -31,6 +33,7 @@ private:
     QLabel *scoreLabel;
     QPixmap *pm_back;
     QGraphicsPixmapItem *pmi_redcircle;
+    QGraphicsLineItem *pmi_winLine = nullptr;
     QList<QList<Chessman *> > pmi_chessmen;
     Chessman *lastMan;
 

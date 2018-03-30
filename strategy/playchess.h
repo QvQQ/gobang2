@@ -10,6 +10,8 @@
 
 using std::ostream;
 
+enum Direc {L, U, LB, LU};
+
 struct position {
     int x = 0, y = 0;
 
@@ -29,7 +31,8 @@ public:
     int setChessman(position pos, const int side);
     int setChessman(position pos);
     position solve();
-    int isDone(position pos);
+    int isDone(Direc *direc, position *pos);
+    void restart();
 
     int getSide();
 
