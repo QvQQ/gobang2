@@ -14,7 +14,7 @@ class Chessboard : public QGraphicsScene{
 
 public:
 
-    Chessboard(QGraphicsView *gv, QLabel *label);
+    Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLabel *label_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan);
     ~Chessboard();
 
     void updateScore();
@@ -24,21 +24,28 @@ public:
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
+    enum {thinking, waiting, idling} state = waiting;
+
 private:
 
     void handleResult(position pos);
 
     playchess player;
+    QLabel *label_black;
+    QLabel *label_white;
+    QLabel *label_round;
+    QLabel *label_scoreOfCom;
+    QLabel *label_scoreOfMan;
+    int scoreOfCom = 0, scoreOfMan = 0;
 
-    QLabel *scoreLabel;
     QPixmap *pm_back;
     QGraphicsPixmapItem *pmi_redcircle;
     QGraphicsLineItem *pmi_winLine = nullptr;
     QList<QList<Chessman *> > pmi_chessmen;
-    Chessman *lastMan;
 
-    enum {thinking, waiting, idling} state = waiting;
-    Chessman::State lastVal = Chessman::Black;
+    Chessman *lastMan;
+    Chessman::State sideOfCom = Chessman::White;
+    Chessman::State sideOfMan = Chessman::Black;
 };
 
 #endif //GOBANG_CHESSBOARD_H

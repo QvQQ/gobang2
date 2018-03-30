@@ -13,7 +13,9 @@
 
 #include <iostream>
 
-Chessboard::Chessboard(QGraphicsView *gv, QLabel *label) : QGraphicsScene(gv), scoreLabel(label) {
+Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLabel *label_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan)
+        : QGraphicsScene(gv), label_black(label_black), label_white(label_white), label_round(label_round), label_scoreOfCom(label_scoreOfCom), label_scoreOfMan(label_scoreOfMan) {
+
     int w = 32, h = 32;
     this->pm_back = new QPixmap(":/images/back");
     gv->setBackgroundBrush(pm_back->scaled(gv->width(), gv->height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
@@ -46,7 +48,7 @@ Chessboard::Chessboard(QGraphicsView *gv, QLabel *label) : QGraphicsScene(gv), s
 
 void Chessboard::handleResult(position rspos) {
     this->lastMan = this->pmi_chessmen[rspos.x - 1][rspos.y - 1];
-    this->lastMan->setState(static_cast<Chessman::State>(-this->lastVal));
+    this->lastMan->setState(this->sideOfCom);
 
     this->pmi_redcircle->setPos(this->lastMan->scenePos());
     this->pmi_redcircle->setZValue(233);
@@ -61,21 +63,21 @@ void Chessboard::handleResult(position rspos) {
 }
 
 void Chessboard::updateScore() {
-    QString score;
-    score.append("Black:");
-    score.append(QString::number(this->player.curBlackScore));
-    score.append("\n");
-    score.append("White:");
-    score.append(QString::number(this->player.curWhiteScore));
-    this->scoreLabel->setText(score);
+    this->label_black->setText(QString::number(this->player.curBlackScore));
+    this->label_white->setText(QString::number(this->player.curWhiteScore));
 }
 
 void Chessboard::finish(Direc direc, position pos) {
 
-    std::cout << ((this->lastVal == Chessman::White) ? "Black" : "White") << " wins the game!"
+    std::cout << ((this->lastMan->getState() == Chessman::Black) ? "Black" : "White") << " wins the game!"
               << " at (" << pos.x << ", " << pos.y << ")" << std::endl;
-    this->scoreLabel->setText(((this->lastVal == Chessman::White) ? "Black wins!" : "White wins!"));
-
+    if (this->lastMan->getState() == Chessman::Black) {
+        this->label_black->setText("Winner!");  /////////////////////////////////////////////////////////////////////////
+        this->label_scoreOfMan->setText(QString::number(++this->scoreOfMan));
+    } else {
+        this->label_white->setText("Winner!");
+        this->label_scoreOfCom->setText(QString::number(++this->scoreOfCom));
+    }
     if (this->pmi_winLine != nullptr) {
         delete this->pmi_winLine;
         this->pmi_winLine = nullptr;
@@ -125,11 +127,17 @@ void Chessboard::restart() {
             man->setState(Chessman::None);
         }
     }
+    this->label_black->setText("0");
+    this->label_white->setText("0");
+    this->label_round->setText("0");
 
     this->player.restart();
     this->pmi_redcircle->setPos(-20, -20);
     delete this->pmi_winLine;
     this->pmi_winLine = nullptr;
+    this->lastMan = nullptr;
+    this->sideOfMan = Chessman::Black;
+    this->sideOfCom = Chessman::White;
     this->state = waiting;
 }
 
@@ -148,9 +156,9 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         this->lastMan = dynamic_cast<Chessman *>(item);
         if (this->lastMan->getState() == Chessman::RedCircle) {
             this->state = thinking;
-            this->lastMan->setState(this->lastVal);
+            this->lastMan->setState(this->sideOfMan);
             position pos = {this->lastMan->getPos().x(), this->lastMan->getPos().y()};
-            this->player.setChessman(pos, this->lastVal);
+            this->player.setChessman(pos, this->sideOfMan);
             this->updateScore();
             this->pmi_redcircle->setPos(this->lastMan->scenePos());
             this->pmi_redcircle->setZValue(233);

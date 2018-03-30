@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QAQ->addAction(action);
 
     this->gv = this->ui->graphicsView;
-    this->chessboard = new Chessboard(this->gv, this->ui->score_label);
+    this->chessboard = new Chessboard(this->gv, this->ui->label_score_black, this->ui->label_score_white, this->ui->label_round, this->ui->label_scoreOfCom, this->ui->label_scoreOfMan);
     this->chessboard->addLine(-gv->width(), -gv->height(), gv->width(), gv->height());
 
     this->gv->setScene(this->chessboard);
@@ -31,9 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
         this->chessboard->restart();
     });
 
-    //this->ui->pushButton;
-
-    statusBar();
 }
 
 void MainWindow::open() {

@@ -19,9 +19,6 @@ ostream &operator<<(ostream &out, const position &p) {
 playchess::playchess() : round(0) {
     qRegisterMetaType<position>("position");
     init_rules(NULL);
-
-    auto a = new int[20][20];
-
 }
 
 int playchess::setChessman(position pos, const int side) {
@@ -114,7 +111,7 @@ rs:
 
 void playchess::restart() {
     this->curBlackScore = this->curWhiteScore = 0;
-
+    memset(this->board, 0, sizeof(this->board));
 }
 
 void playchess::run() {
