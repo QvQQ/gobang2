@@ -37,7 +37,9 @@ Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_whi
         for (int j = 0; j < this->player.size; ++j) {
             Chessman *gcm = new Chessman(QRect(i + 1, j + 1, w, h));
             gcm->setPos(26.5 + w*j - w/2.0, 26.5 + h*i - h/2.0);
+            gcm->pm_step.setPos(26.5 + w*j - w/2.0, 26.5 + h*i - h/2.0);
             this->addItem(gcm);
+            this->addItem(&gcm->pm_step);
             temp.append(gcm);
         }
         this->pmi_chessmen.append(temp);
@@ -173,8 +175,8 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         this->lastMan = dynamic_cast<Chessman *>(item);
         if (this->lastMan->getState() == Chessman::RedCircle) {
             this->state = thinking;
-            this->lastMan->setStep(this->player.getRound());
             this->lastMan->setState(this->sideOfMan);
+            this->lastMan->setStep(this->player.getRound());
             position pos = {this->lastMan->getPos().x(), this->lastMan->getPos().y()};
             this->player.setChessman(pos, this->sideOfMan);
             this->updateScore();

@@ -16,12 +16,14 @@ public:
     ~Chessman();
 
     enum State {None = 0, RedCircle = 2, White = -1, Black = 1};
+    QGraphicsPixmapItem pm_step;
 
     State getState() const;
     void  setState(State state);
 
     void setStep(int step);
     void setStepVisble(bool b);
+    QGraphicsItem *getStepItem();
 
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
@@ -36,7 +38,6 @@ private:
     State state;
     QPoint pos;
     int step = 0;
-    QGraphicsPixmapItem step;
 
     struct {
         QPixmap none;

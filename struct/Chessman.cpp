@@ -1,5 +1,6 @@
 #include "Chessman.h"
 #include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
 #include <QPixmap>
 #include <QBitmap>
 #include <QPainter>
@@ -37,11 +38,9 @@ Chessman::Chessman(QRect initpos) : state(this->None){
     this->pm.white = QPixmap(":/images/white");
     this->pm.white = this->pm.white.scaled(initpos.width()*0.9, initpos.height()*0.9, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    /////////////// step
-    this->step.
-
     /////////////// set default
     this->setPixmap(this->pm.none);
+    this->pm_step.setVisible(false);
 }
 
 Chessman::~Chessman() {
@@ -68,11 +67,30 @@ void Chessman::setState(State state) {
 
 void Chessman::setStep(int step) {
     this->step = step;
+
+    QPixmap  pim(this->pm.none.width(), this->pm.none.height());
+    std::cout << "x:" << this->pm_step.x() << " y:" << this->pm_step.y() << " w:" << this->pm.none.width() << " h:" << this->pm.none.height() << std::endl;
+    pim.fill(Qt::transparent);
+    QPainter pter(&pim);
+    if (this->getState() == Black) {
+        pter.setPen(QPen(Qt::white, 2));
+        pter.setBrush(Qt::white);
+    } else if (this->getState() == White) {
+        pter.setPen(QPen(Qt::black, 2));
+        pter.setBrush(Qt::black);
+    }
+    pter.drawText(this->pm.none.rect(), QString::number(step), QTextOption(Qt::AlignCenter));
+    this->pm_step.setPixmap(pim);
+    this->pm_step.setVisible(true);
 }
 
 void Chessman::setStepVisble(bool b) {
+    this->pm_step.setVisible(b);
+    this->pm_step.setZValue(2333);
+}
 
-
+QGraphicsItem *Chessman::getStepItem() {
+    return &this->pm_step;
 }
 
 void Chessman::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
