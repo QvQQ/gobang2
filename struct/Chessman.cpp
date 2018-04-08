@@ -37,6 +37,9 @@ Chessman::Chessman(QRect initpos) : state(this->None){
     this->pm.white = QPixmap(":/images/white");
     this->pm.white = this->pm.white.scaled(initpos.width()*0.9, initpos.height()*0.9, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
+    /////////////// step
+    this->step.
+
     /////////////// set default
     this->setPixmap(this->pm.none);
 }
@@ -63,6 +66,15 @@ void Chessman::setState(State state) {
     this->state = state;
 }
 
+void Chessman::setStep(int step) {
+    this->step = step;
+}
+
+void Chessman::setStepVisble(bool b) {
+
+
+}
+
 void Chessman::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
     if (this->state == this->None) {  // None -> Redcircle
         this->setState(this->RedCircle);
@@ -80,7 +92,6 @@ QPainterPath Chessman::shape() const {
 }
 
 QPoint Chessman::getPos() const {
-    //std::cout << "x:" << pos.x() << " y:" << pos.y() << std::endl;
     return pos;
 }
 

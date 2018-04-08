@@ -33,8 +33,9 @@ public:
     position solve();
     int isDone(Direc *direc, position *pos);
     void restart();
-
     int getSide();
+    void setSearchDepth(int depth);
+    int getRound() {return this->round;}
 
     constexpr static int size = 15;
     int curBlackScore = 0;
@@ -48,7 +49,8 @@ signals:
 
 private:
     int board[size][size] = {};
-    int round;
+    int round = 0;
+    int depth = 2;
 };
 
 #endif //GOBANG_CHESSBOARD_H

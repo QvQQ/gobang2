@@ -7,6 +7,8 @@
 
 #include <QGraphicsScene>
 #include <QLabel>
+#include <QCheckBox>
+#include <QComboBox>
 #include "struct/Chessman.h"
 #include "strategy/playchess.h"
 
@@ -14,12 +16,16 @@ class Chessboard : public QGraphicsScene{
 
 public:
 
-    Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLabel *label_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan);
+    Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLabel *label_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse);
     ~Chessboard();
 
     void updateScore();
+    void updateRound();
     void finish(Direc direc, position pos);
 
+    void searchDepthChanged(int index);
+    void displayStepsChanges(bool b);
+    void blackReverseChanges(bool b);
     void restart();
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -36,6 +42,7 @@ private:
     QLabel *label_round;
     QLabel *label_scoreOfCom;
     QLabel *label_scoreOfMan;
+    QCheckBox *checkBox_blackReverse;
     int scoreOfCom = 0, scoreOfMan = 0;
 
     QPixmap *pm_back;

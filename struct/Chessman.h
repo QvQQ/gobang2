@@ -20,6 +20,9 @@ public:
     State getState() const;
     void  setState(State state);
 
+    void setStep(int step);
+    void setStepVisble(bool b);
+
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
@@ -32,6 +35,8 @@ public:
 private:
     State state;
     QPoint pos;
+    int step = 0;
+    QGraphicsPixmapItem step;
 
     struct {
         QPixmap none;

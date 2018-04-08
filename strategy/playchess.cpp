@@ -50,13 +50,13 @@ int playchess::setChessman(position pos) {
 position playchess::solve() {
 
     Board *bd = bd_cre(this->board);
-    Point pos = workout(bd, DEP, NULL);
+    Point pos = workout(bd, this->depth, NULL);
     this->setChessman({pos.x, pos.y});
 
     return {pos.x, pos.y};
 }
 
-int playchess::isDone(Direc *direc, position *pos) {
+int playchess::isDone(Direc *direc, position*pos) {
 
     int (*p)[15] = this->board;
 
@@ -110,12 +110,17 @@ rs:
 }
 
 void playchess::restart() {
+    if (this->isRunning())
+        terminate();
+    this->round = 0;
     this->curBlackScore = this->curWhiteScore = 0;
     memset(this->board, 0, sizeof(this->board));
 }
 
 void playchess::run() {
-    emit this->resultReady(this->solve());
+    position pos = this->solve();
+    if (this->isRunning())
+        emit this->resultReady(pos);
 }
 
 int playchess::getSide() {
@@ -124,5 +129,9 @@ int playchess::getSide() {
     for (auto &row : this->board)
         for (auto &col : row)
             sum += col;
-    return sum == 0 ? 1 : -1;
+    return sum == 1 ? -1 : 1;
+}
+
+void playchess::setSearchDepth(int depth) {
+    this->depth = depth;
 }
