@@ -8,14 +8,15 @@
 #include <QPaintEngine>
 #include <QList>
 #include <QLabel>
+#include <QLCDNumber>
 #include <QMessageBox>
 #include "struct/Chessman.h"
 #include "strategy/playchess.h"
 
 #include <iostream>
 
-Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLabel *label_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse)
-        : QGraphicsScene(gv), label_black(label_black), label_white(label_white), label_round(label_round), label_scoreOfCom(label_scoreOfCom), label_scoreOfMan(label_scoreOfMan), checkBox_blackReverse(checkBox_blackReverse) {
+Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLCDNumber *lcdNumber_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse)
+        : QGraphicsScene(gv), label_black(label_black), label_white(label_white), lcdNumber_round(lcdNumber_round), label_scoreOfCom(label_scoreOfCom), label_scoreOfMan(label_scoreOfMan), checkBox_blackReverse(checkBox_blackReverse) {
 
     int w = 32, h = 32;
     this->pm_back = new QPixmap(":/images/back");
@@ -37,7 +38,7 @@ Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_whi
         for (int j = 0; j < this->player.size; ++j) {
             Chessman *gcm = new Chessman(QRect(i + 1, j + 1, w, h));
             gcm->setPos(26.5 + w*j - w/2.0, 26.5 + h*i - h/2.0);
-            gcm->pm_step.setPos(26.5 + w*j - w/2.0, 26.5 + h*i - h/2.0);
+            gcm->pm_step.setPos(25 + w*j - w/2.0, 24.5 + h*i - h/2.0);
             this->addItem(gcm);
             this->addItem(&gcm->pm_step);
             temp.append(gcm);
@@ -49,26 +50,8 @@ Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_whi
     //this->connect(&this->player, &playchess::finished, ...)
 }
 
-void Chessboard::handleResult(position rspos) {
-    if (this->state != thinking) return;
-    this->lastMan = this->pmi_chessmen[rspos.x - 1][rspos.y - 1];
-    this->lastMan->setState(this->sideOfCom);
-    this->lastMan->setStep(this->player.getRound());
-
-    this->pmi_redcircle->setPos(this->lastMan->scenePos());
-    this->pmi_redcircle->setZValue(233);
-    this->updateScore();
-    this->state = waiting;
-
-    position pos; Direc direc;
-    if (player.isDone(&direc, &pos)) {
-        this->state = idling;
-        finish(direc, pos);
-    }
-}
-
 inline void Chessboard::updateRound() {
-    this->label_round->setText(QString::number(this->player.getRound()));
+    this->lcdNumber_round->display(this->player.getRound());
 }
 
 inline void Chessboard::updateScore() {
@@ -88,7 +71,7 @@ void Chessboard::finish(Direc direc, position pos) {
         this->label_black->setText("Winner!");
     else this->label_white->setText("Winner!");
 
-    if (this->sideOfMan == this->lastMan->getState())
+    if (this->lastMan->getState() == this->sideOfMan)
         this->label_scoreOfMan->setText(QString::number(++this->scoreOfMan));
     else this->label_scoreOfCom->setText(QString::number(++this->scoreOfCom));
 
@@ -126,7 +109,7 @@ void Chessboard::finish(Direc direc, position pos) {
     }
 
     this->pmi_winLine->setVisible(true);
-    this->pmi_winLine->setZValue(233);
+    this->pmi_winLine->setZValue(2334);
 
     return;
 }
@@ -139,24 +122,29 @@ void Chessboard::restart() {
     }
     std::cout << "Restarted!" << std::endl;
     this->player.restart();
-    this->checkBox_blackReverse->setEnabled(true);
 
     auto items = this->items();
     for (auto item : items) {
         if (item->type() == 65535 + 233) {
             auto man = dynamic_cast<Chessman *>(item);
             man->setState(Chessman::None);
+            man->clearStep();
         }
     }
     this->label_black->setText("0");
     this->label_white->setText("0");
-    this->label_round->setText("0");
+    this->lcdNumber_round->display(0);
 
     this->pmi_redcircle->setPos(-20, -20);
     delete this->pmi_winLine;
     this->pmi_winLine = nullptr;
     this->lastMan = nullptr;
     this->state = waiting;
+    if (this->checkBox_blackReverse->isChecked()) {
+        this->state = thinking;
+        this->player.setChessman({8, 8});
+        this->handleResult({8, 8});
+    }
 }
 
 Chessboard::~Chessboard() {
@@ -166,22 +154,42 @@ Chessboard::~Chessboard() {
             delete pmii;
 }
 
-void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+void Chessboard::handleResult(position rspos) {
+    if (this->state != thinking) return;
+    this->state = waiting;
 
+    if (this->lastMan) this->lastMan->setStep(this->player.getRound() - 1);
+    this->lastMan = this->pmi_chessmen[rspos.x - 1][rspos.y - 1];
+    this->lastMan->setState(this->sideOfCom);
+    this->updateScore();
+
+    this->pmi_redcircle->setPos(this->lastMan->scenePos());
+    this->pmi_redcircle->setZValue(233);
+
+    position pos; Direc direc;
+    if (player.isDone(&direc, &pos)) {
+        this->state = idling;
+        finish(direc, pos);
+    }
+}
+
+void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem *item = this->itemAt(event->scenePos(), QTransform());
 
     if (this->state == waiting && item && item->type() == 65535 + 233) {
-        if (this->checkBox_blackReverse->isEnabled()) this->checkBox_blackReverse->setEnabled(false);
-        this->lastMan = dynamic_cast<Chessman *>(item);
-        if (this->lastMan->getState() == Chessman::RedCircle) {
+        Chessman *curman = dynamic_cast<Chessman *>(item);
+        if (curman->getState() == Chessman::RedCircle) {
             this->state = thinking;
-            this->lastMan->setState(this->sideOfMan);
-            this->lastMan->setStep(this->player.getRound());
-            position pos = {this->lastMan->getPos().x(), this->lastMan->getPos().y()};
+            curman->setState(this->sideOfMan);
+            position pos = {curman->getPos().x(), curman->getPos().y()};
             this->player.setChessman(pos, this->sideOfMan);
             this->updateScore();
-            this->pmi_redcircle->setPos(this->lastMan->scenePos());
+
+            this->pmi_redcircle->setPos(curman->scenePos());
             this->pmi_redcircle->setZValue(233);
+            if (this->lastMan)
+                this->lastMan->setStep(this->player.getRound());
+            this->lastMan = curman;
 
             position posa; Direc direc;
             if (player.isDone(&direc, &posa)) {
@@ -207,11 +215,25 @@ void Chessboard::displayStepsChanges(bool b) {
         }
 }
 void Chessboard::blackReverseChanges(bool b) {
+    bool flag = false;
+    if (this->state != idling) {
+        if (QMessageBox::Ok == QMessageBox::question((QWidget*)this->parent(), "Are you sure?", "Do you want to restart while playing?", QMessageBox::Cancel, QMessageBox::Ok)) {
+            this->label_scoreOfCom->setText(QString::number(++this->scoreOfCom));
+            flag = true;
+        } else {
+            this->checkBox_blackReverse->setChecked(!b);
+            return;
+        }
+    }
     if (b) {
         this->sideOfCom = Chessman::Black;
         this->sideOfMan = Chessman::White;
     } else {
         this->sideOfCom = Chessman::White;
         this->sideOfMan = Chessman::Black;
+    }
+    if (flag) {
+        this->state = idling;
+        this->restart();
     }
 }

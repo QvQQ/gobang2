@@ -7,6 +7,7 @@
 
 #include <QGraphicsScene>
 #include <QLabel>
+#include <QLCDNumber>
 #include <QCheckBox>
 #include <QComboBox>
 #include "struct/Chessman.h"
@@ -16,7 +17,7 @@ class Chessboard : public QGraphicsScene{
 
 public:
 
-    Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLabel *label_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse);
+    Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLCDNumber *lcdNumber_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse);
     ~Chessboard();
 
     void updateScore();
@@ -37,20 +38,20 @@ private:
     void handleResult(position pos);
 
     playchess player;
-    QLabel *label_black;
-    QLabel *label_white;
-    QLabel *label_round;
-    QLabel *label_scoreOfCom;
-    QLabel *label_scoreOfMan;
-    QCheckBox *checkBox_blackReverse;
+    QLabel *label_black = nullptr;
+    QLabel *label_white = nullptr;
+    QLCDNumber *lcdNumber_round = nullptr;
+    QLabel *label_scoreOfCom = nullptr;
+    QLabel *label_scoreOfMan = nullptr;
+    QCheckBox *checkBox_blackReverse = nullptr;
     int scoreOfCom = 0, scoreOfMan = 0;
 
-    QPixmap *pm_back;
-    QGraphicsPixmapItem *pmi_redcircle;
+    QPixmap *pm_back = nullptr;
+    QGraphicsPixmapItem *pmi_redcircle = nullptr;
     QGraphicsLineItem *pmi_winLine = nullptr;
     QList<QList<Chessman *> > pmi_chessmen;
 
-    Chessman *lastMan;
+    Chessman *lastMan = nullptr;
     Chessman::State sideOfCom = Chessman::White;
     Chessman::State sideOfMan = Chessman::Black;
 };

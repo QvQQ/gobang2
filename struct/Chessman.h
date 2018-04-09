@@ -22,6 +22,7 @@ public:
     void  setState(State state);
 
     void setStep(int step);
+    void clearStep();
     void setStepVisble(bool b);
     QGraphicsItem *getStepItem();
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
+    <width>664</width>
     <height>523</height>
    </rect>
   </property>
@@ -25,7 +25,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>651</width>
+      <width>665</width>
       <height>502</height>
      </rect>
     </property>
@@ -266,32 +266,33 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_round">
+          <widget class="QLCDNumber" name="lcdNumber_round">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
              <horstretch>2</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>34</height>
+            </size>
            </property>
-           <property name="text">
-            <string>0</string>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
            </property>
-           <property name="textFormat">
-            <enum>Qt::PlainText</enum>
+           <property name="smallDecimalPoint">
+            <bool>false</bool>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           <property name="digitCount">
+            <number>3</number>
            </property>
-           <property name="margin">
-            <number>5</number>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
            </property>
-           <property name="indent">
-            <number>5</number>
+           <property name="intValue" stdset="0">
+            <number>0</number>
            </property>
           </widget>
          </item>
@@ -367,6 +368,9 @@
             <property name="text">
              <string>display steps</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
            <widget class="QCheckBox" name="checkBox_blackReverse">
             <property name="enabled">
@@ -428,6 +432,12 @@
             </item>
             <item>
              <widget class="QComboBox" name="comboBox_searchDepth">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>20</height>
+               </size>
+              </property>
               <property name="currentText">
                <string>1</string>
               </property>
@@ -483,7 +493,7 @@
            <widget class="QWidget" name="gridLayoutWidget">
             <property name="geometry">
              <rect>
-              <x>0</x>
+              <x>10</x>
               <y>20</y>
               <width>141</width>
               <height>41</height>
@@ -527,7 +537,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Computer</string>
+                <string>Com</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -655,7 +665,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>650</width>
+     <width>664</width>
      <height>23</height>
     </rect>
    </property>

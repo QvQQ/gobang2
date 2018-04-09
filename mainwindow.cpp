@@ -21,8 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QAQ->addAction(action);
 
     this->gv = this->ui->graphicsView;
-    this->chessboard = new Chessboard(this->gv, this->ui->label_score_black, this->ui->label_score_white, this->ui->label_round, this->ui->label_scoreOfCom, this->ui->label_scoreOfMan, this->ui->checkBox_blackReverse);
-    this->chessboard->addLine(-gv->width(), -gv->height(), gv->width(), gv->height());
+    this->chessboard = new Chessboard(this->gv, this->ui->label_score_black, this->ui->label_score_white, this->ui->lcdNumber_round, this->ui->label_scoreOfCom, this->ui->label_scoreOfMan, this->ui->checkBox_blackReverse);
     this->chessboard->setParent(this);
 
     this->gv->setScene(this->chessboard);
@@ -33,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
     QObject::connect(this->ui->comboBox_searchDepth, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index){this->chessboard->searchDepthChanged(index);});
     QObject::connect(this->ui->checkBox_steps, &QCheckBox::stateChanged, this, [this](int state){this->chessboard->displayStepsChanges(state);});
-    QObject::connect(this->ui->checkBox_blackReverse, &QCheckBox::stateChanged, this, [this](int state){this->chessboard->blackReverseChanges(state);});
+    QObject::connect(this->ui->checkBox_blackReverse, &QCheckBox::clicked, this, [this](int state){this->chessboard->blackReverseChanges(state);});
 }
 
 void MainWindow::open() {

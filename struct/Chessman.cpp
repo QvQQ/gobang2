@@ -40,7 +40,7 @@ Chessman::Chessman(QRect initpos) : state(this->None){
 
     /////////////// set default
     this->setPixmap(this->pm.none);
-    this->pm_step.setVisible(false);
+    this->setStepVisble(true);
 }
 
 Chessman::~Chessman() {
@@ -68,8 +68,7 @@ void Chessman::setState(State state) {
 void Chessman::setStep(int step) {
     this->step = step;
 
-    QPixmap  pim(this->pm.none.width(), this->pm.none.height());
-    std::cout << "x:" << this->pm_step.x() << " y:" << this->pm_step.y() << " w:" << this->pm.none.width() << " h:" << this->pm.none.height() << std::endl;
+    QPixmap pim(this->pm.none.width(), this->pm.none.height());
     pim.fill(Qt::transparent);
     QPainter pter(&pim);
     if (this->getState() == Black) {
@@ -81,7 +80,13 @@ void Chessman::setStep(int step) {
     }
     pter.drawText(this->pm.none.rect(), QString::number(step), QTextOption(Qt::AlignCenter));
     this->pm_step.setPixmap(pim);
-    this->pm_step.setVisible(true);
+}
+
+void Chessman::clearStep() {
+    this->step = 0;
+    QPixmap pim(this->pm.none.width(), this->pm.none.height());
+    pim.fill(Qt::transparent);
+    this->pm_step.setPixmap(pim);
 }
 
 void Chessman::setStepVisble(bool b) {
