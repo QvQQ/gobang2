@@ -66,7 +66,7 @@ void Chessman::setState(State state) {
 }
 
 void Chessman::setStep(int step) {
-    this->step = step;
+    this->stepCount = step;
 
     QPixmap pim(this->pm.none.width(), this->pm.none.height());
     pim.fill(Qt::transparent);
@@ -79,23 +79,23 @@ void Chessman::setStep(int step) {
         pter.setBrush(Qt::black);
     }
     pter.drawText(this->pm.none.rect(), QString::number(step), QTextOption(Qt::AlignCenter));
-    this->pm_step.setPixmap(pim);
+    this->pm_stepIndicate.setPixmap(pim);
 }
 
 void Chessman::clearStep() {
-    this->step = 0;
+    this->stepCount = 0;
     QPixmap pim(this->pm.none.width(), this->pm.none.height());
     pim.fill(Qt::transparent);
-    this->pm_step.setPixmap(pim);
+    this->pm_stepIndicate.setPixmap(pim);
 }
 
 void Chessman::setStepVisble(bool b) {
-    this->pm_step.setVisible(b);
-    this->pm_step.setZValue(2333);
+    this->pm_stepIndicate.setVisible(b);
+    this->pm_stepIndicate.setZValue(2333);
 }
 
 QGraphicsItem *Chessman::getStepItem() {
-    return &this->pm_step;
+    return &this->pm_stepIndicate;
 }
 
 void Chessman::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
