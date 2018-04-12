@@ -66,6 +66,7 @@ void Chessboard::finish(Direc direc, position pos) {
               << " at (" << pos.x << ", " << pos.y << ")" << std::endl;
 
     this->checkBox_blackReverse->setEnabled(true);
+    this->button_regret->setEnabled(false);
 
     if (this->lastMan->getState() == Chessman::Black)
         this->label_black->setText("Winner!");
@@ -115,19 +116,30 @@ void Chessboard::finish(Direc direc, position pos) {
 }
 
 void Chessboard::regret() {
-    stu_stepState &s = this->stepState.back();
+    stu_stepState com = this->stepState.back();
     this->stepState.pop_back();
+    stu_stepState man = this->stepState.back();
+    this->stepState.pop_back();
+
     if (this->stepState.empty())
         this->button_regret->setEnabled(false);
-    this->player.regret({s.chessman->getPos().x(), s.chessman->getPos().y()});
+
+    this->player.regret({com.curMan->getPos().x(), com.curMan->getPos().y()});
+    this->player.regret({man.curMan->getPos().x(), man.curMan->getPos().y()});
+    com.curMan->clearStep();
+    man.curMan->clearStep();
+    com.curMan->setState(Chessman::None);
+    man.curMan->setState(Chessman::None);
     this->updateScore();
 
-    this->playState = s.playState;
-    s.chessman->clearStep();
-    // pmi_redcircle
-    // lastMan
-    // button_regret enable
-
+    if (this->stepState.empty()) {
+        this->pmi_redcircle->setPos(-20, -20);
+    } else {
+        man.lastMan->clearStep();
+        this->pmi_redcircle->setPos(man.lastMan->scenePos());
+        this->pmi_redcircle->setZValue(233);
+    }
+    this->lastMan = man.lastMan;
 }
 
 void Chessboard::restart() {
@@ -161,6 +173,7 @@ void Chessboard::restart() {
         this->handleResult({8, 8});
     }
     this->stepState.clear();
+    this->button_regret->setEnabled(false);
 }
 
 Chessboard::~Chessboard() {
@@ -172,20 +185,22 @@ Chessboard::~Chessboard() {
 
 void Chessboard::handleResult(position rspos) {
     if (this->playState != thinking) return;
-    this->playState = waiting;
+    Chessman *curMan = this->pmi_chessmen[rspos.x - 1][rspos.y - 1];
 
-    if (this->lastMan) this->lastMan->setStep(this->player.getRound() - 1);
-    this->lastMan = this->pmi_chessmen[rspos.x - 1][rspos.y - 1];
-    this->lastMan->setState(this->sideOfCom);
+    this->playState = waiting;
+    this->stepState.push_back({curMan, this->lastMan});
+
+    if (this->lastMan)
+        this->lastMan->setStep(this->player.getRound() - 1);
+
+    curMan->setState(this->sideOfCom);
     this->updateScore();
 
-    this->pmi_redcircle->setPos(this->lastMan->scenePos());
+    this->pmi_redcircle->setPos(curMan->scenePos());
     this->pmi_redcircle->setZValue(233);
+    this->lastMan = curMan;
 
-    this->stepState.push_back({
-        this->lastMan,
-        this->playState
-    });
+    this->button_regret->setEnabled(true);
 
     position pos; Direc direc;
     if (player.isDone(&direc, &pos)) {
@@ -198,24 +213,23 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem *item = this->itemAt(event->scenePos(), QTransform());
 
     if (this->playState == waiting && item && item->type() == 65535 + 233) {
-        Chessman *curman = dynamic_cast<Chessman *>(item);
-        if (curman->getState() == Chessman::RedCircle) {
+        Chessman *curMan = dynamic_cast<Chessman *>(item);
+        if (curMan->getState() == Chessman::RedCircle) {
             this->playState = thinking;
-            curman->setState(this->sideOfMan);
-            position pos = {curman->getPos().x(), curman->getPos().y()};
+            this->stepState.push_back({curMan, this->lastMan});
+
+            curMan->setState(this->sideOfMan);
+            position pos = {curMan->getPos().x(), curMan->getPos().y()};
             this->player.setChessman(pos, this->sideOfMan);
             this->updateScore();
 
-            this->pmi_redcircle->setPos(curman->scenePos());
+            this->pmi_redcircle->setPos(curMan->scenePos());
             this->pmi_redcircle->setZValue(233);
             if (this->lastMan)
-                this->lastMan->setStep(this->player.getRound());
-            this->lastMan = curman;
+                this->lastMan->setStep(this->player.getRound() - 1);
+            this->lastMan = curMan;
 
-            this->stepState.push_back({
-                this->lastMan,
-                this->playState
-            });
+            this->button_regret->setEnabled(false);
 
             position posa; Direc direc;
             if (player.isDone(&direc, &posa)) {

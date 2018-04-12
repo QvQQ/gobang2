@@ -324,6 +324,9 @@
          </property>
          <item>
           <widget class="QPushButton" name="button_regret">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -526,7 +529,7 @@
             </property>
             <layout class="QGridLayout" name="gridLayout" columnstretch="5,1,5">
              <property name="sizeConstraint">
-              <enum>QLayout::SetFixedSize</enum>
+              <enum>QLayout::SetMaximumSize</enum>
              </property>
              <property name="leftMargin">
               <number>3</number>

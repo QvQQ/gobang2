@@ -62,8 +62,8 @@ private:
     Chessman::State sideOfMan = Chessman::Black;
 
     struct stu_stepState {
-        Chessman *chessman;
-        PS playState;
+        Chessman *curMan;
+        Chessman *lastMan;
     };
     vector <stu_stepState> stepState;
 };
