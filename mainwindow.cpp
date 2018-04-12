@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QAQ->addAction(action);
 
     this->gv = this->ui->graphicsView;
-    this->chessboard = new Chessboard(this->gv, this->ui->label_score_black, this->ui->label_score_white, this->ui->lcdNumber_round, this->ui->label_scoreOfCom, this->ui->label_scoreOfMan, this->ui->checkBox_blackReverse);
+    this->chessboard = new Chessboard(this->gv, this->ui->label_score_black, this->ui->label_score_white, this->ui->lcdNumber_round, this->ui->label_scoreOfCom, this->ui->label_scoreOfMan, this->ui->checkBox_blackReverse, this->ui->button_regret);
     this->chessboard->setParent(this);
 
     this->gv->setScene(this->chessboard);

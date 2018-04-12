@@ -15,8 +15,8 @@
 
 #include <iostream>
 
-Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLCDNumber *lcdNumber_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse)
-        : QGraphicsScene(gv), label_black(label_black), label_white(label_white), lcdNumber_round(lcdNumber_round), label_scoreOfCom(label_scoreOfCom), label_scoreOfMan(label_scoreOfMan), checkBox_blackReverse(checkBox_blackReverse) {
+Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLCDNumber *lcdNumber_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse, QPushButton *button_regret)
+        : QGraphicsScene(gv), label_black(label_black), label_white(label_white), lcdNumber_round(lcdNumber_round), label_scoreOfCom(label_scoreOfCom), label_scoreOfMan(label_scoreOfMan), checkBox_blackReverse(checkBox_blackReverse), button_regret(button_regret) {
 
     int w = 32, h = 32;
     this->pm_back = new QPixmap(":/images/back");
@@ -115,8 +115,19 @@ void Chessboard::finish(Direc direc, position pos) {
 }
 
 void Chessboard::regret() {
-///////////
-    std::cout << "Regreted!" << std::endl;
+    stu_stepState &s = this->stepState.back();
+    this->stepState.pop_back();
+    if (this->stepState.empty())
+        this->button_regret->setEnabled(false);
+    this->player.regret({s.chessman->getPos().x(), s.chessman->getPos().y()});
+    this->updateScore();
+
+    this->playState = s.playState;
+    s.chessman->clearStep();
+    // pmi_redcircle
+    // lastMan
+    // button_regret enable
+
 }
 
 void Chessboard::restart() {
@@ -172,11 +183,8 @@ void Chessboard::handleResult(position rspos) {
     this->pmi_redcircle->setZValue(233);
 
     this->stepState.push_back({
-        this->player.getRound(),
-        this->player.curBlackScore,
-        this->player.curWhiteScore,
-        this->sideOfCom,
-        this->lastMan
+        this->lastMan,
+        this->playState
     });
 
     position pos; Direc direc;
@@ -205,11 +213,8 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             this->lastMan = curman;
 
             this->stepState.push_back({
-                this->player.getRound(),
-                this->player.curBlackScore,
-                this->player.curWhiteScore,
-                this->sideOfMan,
-                this->lastMan
+                this->lastMan,
+                this->playState
             });
 
             position posa; Direc direc;

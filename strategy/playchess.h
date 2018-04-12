@@ -33,6 +33,7 @@ public:
     position solve();
     int isDone(Direc *direc, position *pos);
     void restart();
+    void regret(const position pos);
     int getSide();
     void setSearchDepth(int depth);
     int getRound() {return this->round;}

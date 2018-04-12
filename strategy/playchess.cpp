@@ -38,13 +38,12 @@ int playchess::setChessman(position pos, const int side) {
 
         return ++round;
     }
-    cout << "wrong." << endl;
+    std::cerr << "wrong." << endl;
     return 0;
 }
 
 int playchess::setChessman(position pos) {
-    int re = this->setChessman(pos, getSide());
-    return re;
+    return this->setChessman(pos, getSide());
 }
 
 position playchess::solve() {
@@ -115,6 +114,24 @@ void playchess::restart() {
     this->round = 0;
     this->curBlackScore = this->curWhiteScore = 0;
     memset(this->board, 0, sizeof(this->board));
+}
+
+void playchess::regret(const position pos) {
+    if (pos.x <= this->size && pos.x > 0 &&
+        pos.y <= this->size && pos.y > 0 && board[pos.x - 1][pos.y - 1] != 0) {
+
+        this->board[pos.x - 1][pos.y - 1] = 0;
+        --this->round;
+
+        Board *bd = bd_cre(this->board);
+        evaluate(bd);
+        extern int blackScore, whiteScore;
+        this->curBlackScore = blackScore;
+        this->curWhiteScore = whiteScore;
+
+        return;
+    }
+    std::cerr << "wrong!" << endl;
 }
 
 void playchess::run() {

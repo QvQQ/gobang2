@@ -10,6 +10,7 @@
 #include <QLCDNumber>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QPushButton>
 #include <vector>
 #include "struct/Chessman.h"
 #include "strategy/playchess.h"
@@ -20,7 +21,7 @@ class Chessboard : public QGraphicsScene{
 
 public:
 
-    Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLCDNumber *lcdNumber_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse);
+    Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLCDNumber *lcdNumber_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse, QPushButton *button_regret);
     ~Chessboard();
 
     void updateScore();
@@ -35,7 +36,7 @@ public:
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
-    enum {thinking, waiting, idling} playState = waiting;
+    enum PS {thinking, waiting, idling} playState = waiting;
 
 private:
 
@@ -49,6 +50,7 @@ private:
     QLabel *label_scoreOfMan = nullptr;
     QCheckBox *checkBox_blackReverse = nullptr;
     int scoreOfCom = 0, scoreOfMan = 0;
+    QPushButton *button_regret = nullptr;
 
     QPixmap *pm_back = nullptr;
     QGraphicsPixmapItem *pmi_redcircle = nullptr;
@@ -60,10 +62,8 @@ private:
     Chessman::State sideOfMan = Chessman::Black;
 
     struct stu_stepState {
-        int round;
-        int blackScore; int whiteScore;
-        Chessman::State side;
         Chessman *chessman;
+        PS playState;
     };
     vector <stu_stepState> stepState;
 };
