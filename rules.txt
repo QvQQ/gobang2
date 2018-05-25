@@ -1,0 +1,83 @@
+#           0   N
+
+#x#         4   B
+#xx#        32   B
+#xxx#       512  B
+#xxxx#      4096  B
+#xxxxx#     65515  B
+
+#x 			2	B
+#xx 		16	B
+#xxx 		256	B
+#xxxx 		3182	B
+#xxxxx 		65515	B
+
+#xo         2   B
+#xxo        16   B
+#xxxo       256   B
+#xxxxo      3182  B
+#xxxxxo     65515  B
+
+x#          2   B
+xx#         16   B
+xxx#        256   B
+xxxx#       3182  B
+xxxxx#      65515  B
+xxxxxo      65515  B
+
+#o#         4   W
+#oo#        32   W
+#ooo#       512  W
+#oooo#      4096  W
+#ooooo#     65515  W
+
+#o 			2	W
+#oo 		16	W
+#ooo 		256	W
+#oooo 		3182 	W
+#ooooo 		65515 	W
+
+#ox         2  W
+#oox        16   W
+#ooox       256   W
+#oooox      3182  W
+#ooooox     65515  W
+
+o#          2   W
+oo#         16   W
+ooo#        256   W
+oooo#       3182  W
+ooooo#      65515  W
+ooooox      65515  W
+
+
+
+#oxx#         16  B
+#oxxx#          256  B
+#oxxxx#          3182  B
+#oxxxxx#          65515  B
+
+#oxx         16  B
+#oxxx          256  B
+#oxxxx          3182  B
+#oxxxxx          65515  B
+
+oxx#         16  B
+oxxx#          256  B
+oxxxx#          3182  B
+oxxxxx#          65515  B
+
+#xoo#         16  W
+#xooo#         256  W
+#xoooo#         3182  W
+#xooooo#         65515  W
+
+#xoo         16  W
+#xooo         256  W
+#xoooo         3182  W
+#xooooo         65515  W
+
+xoo#         16  W
+xooo#          256  W
+xoooo#          3182  W
+xooooo#          65515  W

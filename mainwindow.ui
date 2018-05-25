@@ -467,10 +467,10 @@
                </size>
               </property>
               <property name="currentText">
-               <string>1</string>
+               <string>2</string>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <item>
                <property name="text">

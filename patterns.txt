@@ -1,0 +1,22 @@
+##o
+ooo
+oo# 1 2
+
+
+x##
+ooo
+oo# 3 4
+
+xx#
+#oo
+oo# 5 6
+
+xxx
+##o
+oo# 7 8
+
+xxx
+x##
+oo# 9 10
+
+// ### 1 2

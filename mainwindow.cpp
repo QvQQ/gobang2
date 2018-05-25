@@ -8,8 +8,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow233)
-{
+    ui(new Ui::MainWindow233) {
     ui->setupUi(this);
 
     QAction *action = new QAction("A^Action", this);

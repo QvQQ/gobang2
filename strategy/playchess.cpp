@@ -46,10 +46,12 @@ int playchess::setChessman(position pos) {
     return this->setChessman(pos, getSide());
 }
 
-position playchess::solve() {
+position playchess::solve() {  // here
 
     Board *bd = bd_cre(this->board);
     Point pos = workout(bd, this->depth, NULL);
+
+    //////////////////////////////////
     this->setChessman({pos.x, pos.y});
 
     return {pos.x, pos.y};
@@ -147,8 +149,4 @@ int playchess::getSide() {
         for (auto &col : row)
             sum += col;
     return sum == 1 ? -1 : 1;
-}
-
-void playchess::setSearchDepth(int depth) {
-    this->depth = depth;
 }

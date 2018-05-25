@@ -3,8 +3,17 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-int main(int argc, char *argv[])
-{   
+#include "./strategy/patternrecognizer.h"
+void test() {
+
+    PatternRecognizer przer("patterns.txt");
+
+}
+
+int main(int argc, char *argv[]) {
+
+    //test();return 0;
+
     QApplication app(argc, argv);
 
     MainWindow qmw;

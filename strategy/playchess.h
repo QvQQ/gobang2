@@ -11,6 +11,7 @@
 using std::ostream;
 
 enum Direc {L, U, LB, LU};
+enum class SolveMode {ruleBase, searchBase};
 
 struct position {
     int x = 0, y = 0;
@@ -35,8 +36,10 @@ public:
     void restart();
     void regret(const position pos);
     int getSide();
-    void setSearchDepth(int depth);
-    int getRound() {return this->round;}
+    void setSearchDepth(int depth) { this->depth = depth; }
+    int getRound() { return round; }
+
+    void setMode(SolveMode sm) { solvemode = sm; }
 
     constexpr static int size = 15;
     int curBlackScore = 0;
@@ -49,6 +52,7 @@ signals:
     void resultReady(position pos);
 
 private:
+    SolveMode solvemode = SolveMode::searchBase;
     int board[size][size] = {};
     int round = 0;
     int depth = 2;

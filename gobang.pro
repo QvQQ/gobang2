@@ -31,14 +31,16 @@ SOURCES += \
     struct/Chessboard.cpp \
     struct/Chessman.cpp \
     strategy/gobang2.c \
-    strategy/playchess.cpp
+    strategy/playchess.cpp \
+    strategy/patternrecognizer.cpp
 
 HEADERS += \
     mainwindow.h \
     struct/Chessboard.h \
     struct/Chessman.h \
     strategy/gobang2.h \
-    strategy/playchess.h
+    strategy/playchess.h \
+    strategy/patternrecognizer.h
 
 FORMS += \
         mainwindow.ui
