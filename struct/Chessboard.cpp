@@ -60,10 +60,10 @@ inline void Chessboard::updateScore() {
     this->label_white->setText(QString::number(this->player.curWhiteScore));
 }
 
-void Chessboard::finish(Direc direc, position pos) {
+void Chessboard::finish(Direc direc, Position pos) {
 
     std::cout << ((this->lastMan->getState() == Chessman::Black) ? "Black" : "White") << " wins the game!"
-              << " at (" << pos.x << ", " << pos.y << ")" << std::endl;
+              << " at (" << pos.first << ", " << pos.second << ")" << std::endl;
 
     this->checkBox_blackReverse->setEnabled(true);
     this->button_regret->setEnabled(false);
@@ -87,25 +87,25 @@ void Chessboard::finish(Direc direc, position pos) {
             this->pmi_winLine = this->addLine(0, 0, w*5, 0, QPen(QBrush(Qt::red), w/6));
             this->pmi_winLine->setTransformOriginPoint(0, -w/4);
             this->pmi_winLine->setRotation(0);
-            this->pmi_winLine->setPos(pos.y * w - w/2 - w/4, pos.x * w - 6);
+            this->pmi_winLine->setPos(pos.second * w - w/2 - w/4, pos.first * w - 6);
             break;
         case U:
             this->pmi_winLine = this->addLine(0, 0, w*5, 0, QPen(QBrush(Qt::red), w/6));
             this->pmi_winLine->setTransformOriginPoint(0, -w/4);
             this->pmi_winLine->setRotation(90);
-            this->pmi_winLine->setPos(pos.y * w + 1, pos.x * w - w/2);
+            this->pmi_winLine->setPos(pos.second * w + 1, pos.first * w - w/2);
             break;
         case LB:
             this->pmi_winLine = this->addLine(0, 0, w*7, 0, QPen(QBrush(Qt::red), w/6));
             this->pmi_winLine->setTransformOriginPoint(0, -w/4);
             this->pmi_winLine->setRotation(-45);
-            this->pmi_winLine->setPos(pos.y * w - w + w/8, pos.x * w + w/2 - w/8);
+            this->pmi_winLine->setPos(pos.second * w - w + w/8, pos.first * w + w/2 - w/8);
             break;
         case LU:
             this->pmi_winLine = this->addLine(0, 0, w*7, 0, QPen(QBrush(Qt::red), w/6));
             this->pmi_winLine->setTransformOriginPoint(0, -w/4);
             this->pmi_winLine->setRotation(45);
-            this->pmi_winLine->setPos(pos.y * w - w/2 - w/8 + 3, pos.x * w - w/2 - w/8);
+            this->pmi_winLine->setPos(pos.second * w - w/2 - w/8 + 3, pos.first * w - w/2 - w/8);
             break;
     }
 
@@ -183,9 +183,9 @@ Chessboard::~Chessboard() {
             delete pmii;
 }
 
-void Chessboard::handleResult(position rspos) {
+void Chessboard::handleResult(Position rspos) {
     if (this->playState != thinking) return;
-    Chessman *curMan = this->pmi_chessmen[rspos.x - 1][rspos.y - 1];
+    Chessman *curMan = this->pmi_chessmen[rspos.first - 1][rspos.second - 1];
 
     this->playState = waiting;
     this->stepState.push_back({curMan, this->lastMan});
@@ -202,7 +202,7 @@ void Chessboard::handleResult(position rspos) {
 
     this->button_regret->setEnabled(true);
 
-    position pos; Direc direc;
+    Position pos; Direc direc;
     if (player.isDone(&direc, &pos)) {
         this->playState = idling;
         finish(direc, pos);
@@ -219,7 +219,7 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             this->stepState.push_back({curMan, this->lastMan});
 
             curMan->setState(this->sideOfMan);
-            position pos = {curMan->getPos().x(), curMan->getPos().y()};
+            Position pos = {curMan->getPos().x(), curMan->getPos().y()};
             this->player.setChessman(pos, this->sideOfMan);
             this->updateScore();
 
@@ -231,7 +231,7 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
             this->button_regret->setEnabled(false);
 
-            position posa; Direc direc;
+            Position posa; Direc direc;
             if (player.isDone(&direc, &posa)) {
                 this->playState = idling;
                 finish(direc, posa);

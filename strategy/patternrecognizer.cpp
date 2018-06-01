@@ -56,10 +56,56 @@ void PatternRecognizer::fillthemap(std::map<std::string, std::pair<int, int>> &m
     if (pos == std::string::npos) {
         map[str] = p;
     } else {
+        str[pos] = '_';
+        fillthemap(map, str, p);
         str[pos] = 'x';
         fillthemap(map, str, p);
         str[pos] = 'o';
         fillthemap(map, str, p);
         str[pos] = '#';
     }
+}
+
+Position PatternRecognizer::query(const int board[TS][TS]) {
+
+    unsigned row(0), col(0);
+    std::string strseq;
+    char c;
+
+    for (int i = 0; i < TS; ++i) {
+        for (int j = 0; j < TS; ++j) {
+            std::cout << board[i][j] << ' ';
+        }
+        std::cout << std::endl;
+    }
+
+    unsigned sum(0);
+    for (auto &pt : patterns) {
+        row = pt.first.first;
+        col = pt.first.second;
+        for (unsigned i = 0; i <= TS - row; ++i) {
+            for (unsigned j = 0; j <= TS - col; ++j) {
+
+                for (unsigned k = i; k < row + i; ++k) {
+                    for (unsigned l = j; l < col + j; ++l) {
+                        switch(static_cast<char>(board[k][l])) {  // black: 1  white: -1
+                            case  0: c = '_'; break;
+                            case  1: c = 'x'; break;
+                            case -1: c = 'o'; break;
+                        }
+                        strseq.append(1, c);
+                    }
+                }
+                auto element = pt.second.find(strseq);
+                std::cout << std::boolalpha
+                          << ++sum << ". "
+                          << (element != pt.second.end())
+                          << " " << row << "x" << col << ": " << strseq << std::endl
+                          << std::noboolalpha;
+                strseq.clear();
+            }
+        }
+
+    }
+    return {-1, -1};
 }

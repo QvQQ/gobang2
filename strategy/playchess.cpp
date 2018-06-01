@@ -1,5 +1,6 @@
 #include <iostream>
 #include "playchess.h"
+#include "strategy/patternrecognizer.h"
 extern "C" {
 #include "gobang2.h"
 }
@@ -8,27 +9,20 @@ using std::cout;
 using std::endl;
 using std::ostream;
 
-position::position() : x(0), y(0) {}
-position::position(int x, int y) : x(x), y(y) {}
 
-ostream &operator<<(ostream &out, const position &p) {
-    out << "(" << p.x << ", " << p.y << ")";
-    return out;
-}
-
-playchess::playchess() : round(0) {
-    qRegisterMetaType<position>("position");
+playchess::playchess() : pr("patterns.txt"), round(0), depth(2) {
+    qRegisterMetaType<Position>("Position");
     init_rules(NULL);
 }
 
-int playchess::setChessman(position pos, const int side) {
+int playchess::setChessman(Position pos, const int side) {
 
-    cout << "No." << (round + 1) << " at " << pos << " with " << (side == 1 ? "black." : "white.") << endl;
+    cout << "No." << (round + 1) << " at (" << pos.first << ", " << pos.second << ") with " << (side == 1 ? "black." : "white.") << endl;
 
-    if (pos.x <= this->size && pos.x > 0 &&
-        pos.y <= this->size && pos.y > 0 && board[pos.x - 1][pos.y - 1] == 0) {
+    if (pos.first <= this->size && pos.first > 0 &&
+        pos.second <= this->size && pos.second > 0 && board[pos.first - 1][pos.second - 1] == 0) {
 
-        this->board[pos.x - 1][pos.y - 1] = side;
+        this->board[pos.first - 1][pos.second - 1] = side;
 
         Board *bd = bd_cre(this->board);
         evaluate(bd);
@@ -42,22 +36,33 @@ int playchess::setChessman(position pos, const int side) {
     return 0;
 }
 
-int playchess::setChessman(position pos) {
+int playchess::setChessman(Position pos) {
     return this->setChessman(pos, getSide());
 }
 
-position playchess::solve() {  // here
+Position playchess::solve() {  // here
 
-    Board *bd = bd_cre(this->board);
-    Point pos = workout(bd, this->depth, NULL);
+    Position pos{-1, -1};
+    switch (solvemode) {
+        case SolveMode::searchBase: {
+            Board *bd = bd_cre(this->board);
+            auto rs = workout(bd, this->depth, NULL);
+            pos.first = rs.x; pos.second = rs.y;
+            break;
+        }
+        case SolveMode::ruleBase: {
+            pos = pr.query(this->board);
+            break;
+        }
+    }
 
     //////////////////////////////////
-    this->setChessman({pos.x, pos.y});
+    this->setChessman(pos);
 
-    return {pos.x, pos.y};
+    return pos;
 }
 
-int playchess::isDone(Direc *direc, position*pos) {
+int playchess::isDone(Direc *direc, Position *pos) {
 
     int (*p)[15] = this->board;
 
@@ -105,7 +110,7 @@ int playchess::isDone(Direc *direc, position*pos) {
     }
     return abs(0);
 rs:
-    pos->x = i + 1; pos->y = j + 1;
+    pos->first = i + 1; pos->second = j + 1;
     printf("Done at (%d, %d)\n", i + 1, j + 1);
     return 1;
 }
@@ -118,11 +123,11 @@ void playchess::restart() {
     memset(this->board, 0, sizeof(this->board));
 }
 
-void playchess::regret(const position pos) {
-    if (pos.x <= this->size && pos.x > 0 &&
-        pos.y <= this->size && pos.y > 0 && board[pos.x - 1][pos.y - 1] != 0) {
+void playchess::regret(const Position pos) {
+    if (pos.first <= this->size && pos.first > 0 &&
+        pos.second <= this->size && pos.second > 0 && board[pos.first - 1][pos.second - 1] != 0) {
 
-        this->board[pos.x - 1][pos.y - 1] = 0;
+        this->board[pos.first - 1][pos.second - 1] = 0;
         --this->round;
 
         Board *bd = bd_cre(this->board);
@@ -137,7 +142,7 @@ void playchess::regret(const position pos) {
 }
 
 void playchess::run() {
-    position pos = this->solve();
+    Position pos = this->solve();
     if (this->isRunning())
         emit this->resultReady(pos);
 }

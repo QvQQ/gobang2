@@ -7,10 +7,15 @@
 #include <vector>
 #include <string>
 
+#define TS 15
+
+using Position = std::pair<int, int>;
+
 class PatternRecognizer
 {
 public:
     PatternRecognizer(const std::string &path);
+    Position query(const int board[TS][TS]);
 
 private:
     struct Pattern {

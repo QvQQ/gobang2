@@ -3,16 +3,14 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-#include "./strategy/patternrecognizer.h"
-void test() {
-
-    PatternRecognizer przer("patterns.txt");
-
-}
+#include "./strategy/playchess.h" //////////////
 
 int main(int argc, char *argv[]) {
 
-    //test();return 0;
+    playchess pl;
+    pl.setMode(SolveMode::ruleBase);
+    pl.solve();
+    return 0;
 
     QApplication app(argc, argv);
 

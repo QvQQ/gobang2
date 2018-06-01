@@ -26,7 +26,7 @@ public:
 
     void updateScore();
     void updateRound();
-    void finish(Direc direc, position pos);
+    void finish(Direc direc, Position pos);
 
     void searchDepthChanged(int index);
     void displayStepsChanges(bool b);
@@ -40,7 +40,7 @@ public:
 
 private:
 
-    void handleResult(position pos);
+    void handleResult(Position pos);
 
     playchess player;
     QLabel *label_black = nullptr;

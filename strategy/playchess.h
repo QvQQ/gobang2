@@ -7,19 +7,14 @@
 
 #include <ostream>
 #include <QThread>
+#include "strategy/patternrecognizer.h"
 
 using std::ostream;
 
 enum Direc {L, U, LB, LU};
 enum class SolveMode {ruleBase, searchBase};
 
-struct position {
-    int x = 0, y = 0;
-
-    position();
-    position(int x, int y);
-    friend ostream &operator<<(ostream &out, const position &p);
-};
+using Position = std::pair<int, int>;
 
 class playchess : public QThread {  // black: 1  white: -1
 
@@ -29,12 +24,12 @@ public:
 
     playchess();
 
-    int setChessman(position pos, const int side);
-    int setChessman(position pos);
-    position solve();
-    int isDone(Direc *direc, position *pos);
+    int setChessman(Position pos, const int side);
+    int setChessman(Position pos);
+    Position solve();
+    int isDone(Direc *direc, Position *pos);
     void restart();
-    void regret(const position pos);
+    void regret(const Position pos);
     int getSide();
     void setSearchDepth(int depth) { this->depth = depth; }
     int getRound() { return round; }
@@ -49,13 +44,30 @@ protected:
     void run();
 
 signals:
-    void resultReady(position pos);
+    void resultReady(Position pos);
 
 private:
+    PatternRecognizer pr;
     SolveMode solvemode = SolveMode::searchBase;
-    int board[size][size] = {};
-    int round = 0;
-    int depth = 2;
+    int board[size][size] = {
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    };
+    int round;
+    int depth;
 };
 
 #endif //GOBANG_CHESSBOARD_H
