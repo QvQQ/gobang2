@@ -11,7 +11,6 @@ PatternRecognizer::PatternRecognizer(const std::string &path) {
     std::ifstream in(path);
     std::string line;
     std::vector<std::string> matrix;
-    Pattern ptn;
 
     while (in) {
         matrix.clear();
@@ -23,54 +22,51 @@ PatternRecognizer::PatternRecognizer(const std::string &path) {
         if (matrix.empty()) continue;
         line = matrix.back();
         if (line[0] == '/') continue;
-
         auto b = line.find_first_of("0123456789");
         if(b == std::string::npos) throw;
+
         std::stringstream ss;
+        Pattern ptn;
         ss << line.substr(b);
-        ss >> ptn.pos.first >> ptn.pos.second;
+        ss >> ptn.target.first >> ptn.target.second;
         ss.clear();  // essential
         std::for_each(matrix.begin(), matrix.end(), [&] (const std::string &s) { ss << s; });
         ss >> line;
-        ptn.raw = std::string(line.begin(), line.end());
-        std::cout << "at " << ptn.pos.first << ", "
-                  << ptn.pos.second << " with raw:" << ptn.raw << std::endl;
-        rawPatterns.insert(ptn);
-        auto row = matrix.size(), col = matrix.front().size();
-        fillthemap(patterns[std::make_pair(row, col)], ptn.raw, ptn.pos);
+
+        ptn.rawstr = std::string(line.begin(), line.end());
+        std::cout << "rawstr(" << ptn.rawstr.length() << "): [" << ptn.rawstr << "]" << std::endl;
+        ptn.rowcol = std::make_pair(matrix.size(), matrix.front().size());
+        fillthemap(patterns[ptn.rowcol], ptn);
     }
+    // 输出所有模式
     for (auto &item : patterns) {
         std::cout << std::endl << item.first.first << "x" << item.first.second << ": " << std::endl;
         for (auto &it : item.second) {
-            std::cout << it.first << " - (" << it.second.first
-                  << ", " << it.second.second << ")" << std::endl;
+            std::cout << '[' << it.rawstr << " - (" << it.target.first
+                  << ", " << it.target.second << ")]" << std::endl;
         }
     }
     std::cout << "Initialization done" << std::endl;
 }
 
-void PatternRecognizer::fillthemap(std::map<std::string, std::pair<int, int>> &map,
-                                   std::string &str, const std::pair<int, int> &p) {
-
-    auto pos = str.find_first_of('#');
-    if (pos == std::string::npos) {
-        map[str] = p;
-    } else {
-        str[pos] = '_';
-        fillthemap(map, str, p);
-        str[pos] = 'x';
-        fillthemap(map, str, p);
-        str[pos] = 'o';
-        fillthemap(map, str, p);
-        str[pos] = '#';
+void PatternRecognizer::fillthemap(std::set<Pattern> &pset, Pattern &ptn) {
+    auto gridState = GridState::Nil;
+    for (int i = 0; i < (int)ptn.rawstr.length(); ++i) {
+        if (ptn.rawstr[i] == '#') continue;
+        switch (ptn.rawstr[i]) {
+        case 'x': gridState = GridState::Proponent; break;
+        case 'o': gridState = GridState::Opponent; break;
+        case '_': gridState = GridState::Nil; break;
+        }  // 检查点的位置，0为第一个
+        std::cout << "points.insert: (" << i / ptn.rowcol.second
+                  << ", " << i % ptn.rowcol.second << ") "
+                  << ptn.rawstr[i] << std::endl;
+        ptn.points.insert({{i / ptn.rowcol.second, i % ptn.rowcol.second}, gridState});
     }
+    pset.insert(ptn);
 }
 
-Position PatternRecognizer::query(const int board[TS][TS]) {
-
-    unsigned row(0), col(0);
-    std::string strseq;
-    char c;
+Position PatternRecognizer::query(const int board[TS][TS], const int proponent) {
 
     for (int i = 0; i < TS; ++i) {
         for (int j = 0; j < TS; ++j) {
@@ -79,33 +75,31 @@ Position PatternRecognizer::query(const int board[TS][TS]) {
         std::cout << std::endl;
     }
 
-    unsigned sum(0);
-    for (auto &pt : patterns) {
-        row = pt.first.first;
-        col = pt.first.second;
+    for (auto &mptns : patterns) {
+        unsigned row = mptns.first.first, col = mptns.first.second;
         for (unsigned i = 0; i <= TS - row; ++i) {
             for (unsigned j = 0; j <= TS - col; ++j) {
 
-                for (unsigned k = i; k < row + i; ++k) {
-                    for (unsigned l = j; l < col + j; ++l) {
-                        switch(static_cast<char>(board[k][l])) {  // black: 1  white: -1
-                            case  0: c = '_'; break;
-                            case  1: c = 'x'; break;
-                            case -1: c = 'o'; break;
+                for (auto &ptn : mptns.second) {
+                    for (auto &point : ptn.points) {
+                        auto grid = board[i + point.first.first][j + point.first.second];
+                        if (!grid) {
+                            if (point.second != GridState::Nil)
+                                goto CONTINUE;
+                        } else if (proponent == grid) {
+                            if (point.second != GridState::Proponent)
+                                goto CONTINUE;
+                        } else {
+                            if (point.second != GridState::Opponent)
+                                goto CONTINUE;
                         }
-                        strseq.append(1, c);
                     }
+                    return {i + ptn.target.first, j + ptn.target.second};
+                    CONTINUE: continue;
                 }
-                auto element = pt.second.find(strseq);
-                std::cout << std::boolalpha
-                          << ++sum << ". "
-                          << (element != pt.second.end())
-                          << " " << row << "x" << col << ": " << strseq << std::endl
-                          << std::noboolalpha;
-                strseq.clear();
             }
         }
-
     }
+    throw 2333;
     return {-1, -1};
 }

@@ -18,6 +18,8 @@
 Chessboard::Chessboard(QGraphicsView *gv, QLabel *label_black, QLabel *label_white, QLCDNumber *lcdNumber_round, QLabel *label_scoreOfCom, QLabel *label_scoreOfMan, QCheckBox *checkBox_blackReverse, QPushButton *button_regret)
         : QGraphicsScene(gv), label_black(label_black), label_white(label_white), lcdNumber_round(lcdNumber_round), label_scoreOfCom(label_scoreOfCom), label_scoreOfMan(label_scoreOfMan), checkBox_blackReverse(checkBox_blackReverse), button_regret(button_regret) {
 
+    player.setMode(SolveMode::ruleBase);
+
     int w = 32, h = 32;
     this->pm_back = new QPixmap(":/images/back");
     gv->setBackgroundBrush(pm_back->scaled(gv->width(), gv->height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));

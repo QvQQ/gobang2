@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "playchess.h"
 #include "strategy/patternrecognizer.h"
 extern "C" {
@@ -10,7 +11,7 @@ using std::endl;
 using std::ostream;
 
 
-playchess::playchess() : pr("patterns.txt"), round(0), depth(2) {
+playchess::playchess() : pr("patterns.txt"), round(0), depth(3) {
     qRegisterMetaType<Position>("Position");
     init_rules(NULL);
 }
@@ -43,17 +44,42 @@ int playchess::setChessman(Position pos) {
 Position playchess::solve() {  // here
 
     Position pos{-1, -1};
+    bool flag = false;
+
     switch (solvemode) {
+        case SolveMode::ruleBase: {
+            try {
+                pos = pr.query(this->board, getSide());
+                break;
+            } catch (int) {
+                flag = true;
+            }
+            // 然后移交至searchBase
+        }
         case SolveMode::searchBase: {
             Board *bd = bd_cre(this->board);
             auto rs = workout(bd, this->depth, NULL);
             pos.first = rs.x; pos.second = rs.y;
             break;
         }
-        case SolveMode::ruleBase: {
-            pos = pr.query(this->board);
-            break;
+    }
+
+    if (flag) {
+        std::ofstream out("unrecognized.txt", std::ofstream::app);
+        std::ostream_iterator<std::string> coit(out);
+        *coit++ = "\n[" + std::string(getSide() == -1 ? "Black" : "White")
+                + " turns, round " + std::to_string(getRound() + 1) + ", recommand pos: ("
+                + std::to_string(pos.first) + "," + std::to_string(pos.second) + ")]\n";
+        for (auto i = 0; i < TS; ++i) {
+            for (auto j = 0; j < TS; ++j) {
+                    *coit++ = (i + 1 == pos.first && j + 1 == pos.second)
+                        ? "x "
+                        : (board[i][j] == 1 ? "● " : board[i][j] == -1 ? "○ " : "· ");
+            }
+            *coit++ = "\n";
         }
+        std::cerr << "Recorded a state with unrecoginized pattern!!!" << std::endl;
+        out.close();
     }
 
     //////////////////////////////////

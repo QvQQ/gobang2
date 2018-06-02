@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include <unordered_set>
 #include <set>
 #include <vector>
 #include <string>
@@ -15,18 +16,25 @@ class PatternRecognizer
 {
 public:
     PatternRecognizer(const std::string &path);
-    Position query(const int board[TS][TS]);
+    Position query(const int board[TS][TS], const int curr);
 
 private:
-    struct Pattern {
-        std::string raw;
-        std::pair<int, int> pos;
-        bool operator<(const Pattern &a) const { return raw < a.raw; }
+    enum class GridState { Nil, Opponent, Proponent};
+    struct hasher {  // 自定义hash函数
+        std::size_t operator()(const std::pair<Position, GridState> &point) const {
+            return std::hash<int>()(point.first.first) ^ std::hash<int>()(point.first.second);
+        }
     };
-    std::set<Pattern> rawPatterns;
-    std::map<std::pair<int, int>, std::map<std::string, std::pair<int, int>>> patterns;
-    //   map(     pair(3, 3)    ,      map("xxooxxxxx",      pair(2, 1)       )))
-    void fillthemap(std::map<std::string, std::pair<int, int>> &map, std::string &s, const std::pair<int, int> &p);
+    struct Pattern {
+        Position target;
+        Position rowcol;
+        std::string rawstr;
+        std::unordered_set<std::pair<Position, GridState>, hasher> points;
+        bool operator<(const Pattern &a) const { return rawstr < a.rawstr; }
+    };
+    std::map<std::pair<int, int>, std::set<Pattern>> patterns;
+
+    void fillthemap(std::set<Pattern> &pset, Pattern &ptn);
 };
 
 #endif // PATTERNRECOGNIZER_H

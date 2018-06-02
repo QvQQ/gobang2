@@ -3,14 +3,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-#include "./strategy/playchess.h" //////////////
-
 int main(int argc, char *argv[]) {
-
-    playchess pl;
-    pl.setMode(SolveMode::ruleBase);
-    pl.solve();
-    return 0;
 
     QApplication app(argc, argv);
 

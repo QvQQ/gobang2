@@ -153,10 +153,10 @@ void init_rules(const char *path) {
 	if (!path)
         path = "rules.txt";
 
-	FILE *file = fopen(path, "r");
+    FILE *file = fopen(path, "r");
 
     if (!file)
-		exit(-777);
+        exit(-777);
 
     char state[256] = { 0 };
 	int  score = 0;
