@@ -31,6 +31,7 @@ public:
     void searchDepthChanged(int index);
     void displayStepsChanges(bool b);
     void blackReverseChanges(bool b);
+    void tabWigetChanged(int index);
     void restart();
     void regret();
 
@@ -43,13 +44,17 @@ private:
     void handleResult(Position pos);
 
     playchess player;
+
     QLabel *label_black = nullptr;
     QLabel *label_white = nullptr;
+
     QLCDNumber *lcdNumber_round = nullptr;
+
     QLabel *label_scoreOfCom = nullptr;
     QLabel *label_scoreOfMan = nullptr;
-    QCheckBox *checkBox_blackReverse = nullptr;
     int scoreOfCom = 0, scoreOfMan = 0;
+
+    QCheckBox *checkBox_blackReverse = nullptr;
     QPushButton *button_regret = nullptr;
 
     QPixmap *pm_back = nullptr;
@@ -61,11 +66,11 @@ private:
     Chessman::State sideOfCom = Chessman::White;
     Chessman::State sideOfMan = Chessman::Black;
 
-    struct stu_stepState {
+    struct stuStepSeqs {
         Chessman *curMan;
         Chessman *lastMan;
     };
-    vector <stu_stepState> stepState;
+    vector <stuStepSeqs> stepSeqs;
 };
 
 #endif //GOBANG_CHESSBOARD_H

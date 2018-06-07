@@ -7,6 +7,12 @@
 #include <iterator>
 
 PatternRecognizer::PatternRecognizer(const std::string &path) {
+    initialize(path);
+}
+
+void PatternRecognizer::initialize(const std::string &path) {
+
+    if (!patterns.empty()) patterns.clear();
 
     std::ifstream in(path);
     std::string line;
@@ -35,48 +41,50 @@ PatternRecognizer::PatternRecognizer(const std::string &path) {
 
         ptn.rawstr = std::string(line.begin(), line.end());
         std::cout << "rawstr(" << ptn.rawstr.length() << "): [" << ptn.rawstr << "]" << std::endl;
-        ptn.rowcol = std::make_pair(matrix.size(), matrix.front().size());
+        ptn.rowcol = std::make_pair(matrix.size(), line.length()/matrix.size());
         fillthemap(patterns[ptn.rowcol], ptn);
+        std::cout << std::endl;
     }
     // 输出所有模式
+    std::cout << std::endl;
     for (auto &item : patterns) {
-        std::cout << std::endl << item.first.first << "x" << item.first.second << ": " << std::endl;
+        std::cout << item.first.first << "x" << item.first.second
+                  << "(" << item.second.size() << "): " << std::endl;
         for (auto &it : item.second) {
-            std::cout << '[' << it.rawstr << " - (" << it.target.first
+            std::cout << "    [" << it.rawstr << " - (" << it.target.first
                   << ", " << it.target.second << ")]" << std::endl;
         }
     }
-    std::cout << "Initialization done" << std::endl;
+    std::cout << "Initialization done!\n" << std::endl;
 }
 
 void PatternRecognizer::fillthemap(std::set<Pattern> &pset, Pattern &ptn) {
     auto gridState = GridState::Nil;
+    std::cout << "    points.insert: [";
     for (int i = 0; i < (int)ptn.rawstr.length(); ++i) {
-        if (ptn.rawstr[i] == '#') continue;
         switch (ptn.rawstr[i]) {
-        case 'x': gridState = GridState::Proponent; break;
-        case 'o': gridState = GridState::Opponent; break;
-        case '_': gridState = GridState::Nil; break;
+        case 'x':
+            gridState = GridState::Proponent; break;
+        case 'o':
+            gridState = GridState::Opponent; break;
+        case '_':
+            gridState = GridState::Nil; break;
+        default: continue;
         }  // 检查点的位置，0为第一个
-        std::cout << "points.insert: (" << i / ptn.rowcol.second
+        std::cout << "(" << i / ptn.rowcol.second
                   << ", " << i % ptn.rowcol.second << ") "
-                  << ptn.rawstr[i] << std::endl;
+                  << ptn.rawstr[i] << ", ";
         ptn.points.insert({{i / ptn.rowcol.second, i % ptn.rowcol.second}, gridState});
     }
+    std::cout << "]" << std::endl;
     pset.insert(ptn);
 }
 
 Position PatternRecognizer::query(const int board[TS][TS], const int proponent) {
-
-    for (int i = 0; i < TS; ++i) {
-        for (int j = 0; j < TS; ++j) {
-            std::cout << board[i][j] << ' ';
-        }
-        std::cout << std::endl;
-    }
-
+    std::cout << "Query: ";
     for (auto &mptns : patterns) {
         unsigned row = mptns.first.first, col = mptns.first.second;
+        std::cout << row << "x" << col << " -> ";
         for (unsigned i = 0; i <= TS - row; ++i) {
             for (unsigned j = 0; j <= TS - col; ++j) {
 
@@ -94,12 +102,14 @@ Position PatternRecognizer::query(const int board[TS][TS], const int proponent) 
                                 goto CONTINUE;
                         }
                     }
+                    std::cout << "end(" << i + ptn.target.first << ", " << j + ptn.target.second << ")" << std::endl;
                     return {i + ptn.target.first, j + ptn.target.second};
                     CONTINUE: continue;
                 }
             }
         }
     }
+    std::cout << "not found" << std::endl;
     throw 2333;
     return {-1, -1};
 }

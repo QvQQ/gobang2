@@ -21,6 +21,9 @@ public:
 
     void open();
 
+private slots:
+    void on_tabWidget_currentChanged(int index);
+
 private:
     Ui::MainWindow233 *ui;
 

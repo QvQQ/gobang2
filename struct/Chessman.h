@@ -8,7 +8,7 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneEvent>
 
-class Chessman : public QGraphicsPixmapItem{
+class Chessman : public QGraphicsPixmapItem {
 
 public:
 

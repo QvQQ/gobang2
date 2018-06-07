@@ -118,12 +118,12 @@ void Chessboard::finish(Direc direc, Position pos) {
 }
 
 void Chessboard::regret() {
-    stu_stepState com = this->stepState.back();
-    this->stepState.pop_back();
-    stu_stepState man = this->stepState.back();
-    this->stepState.pop_back();
+    stuStepSeqs com = this->stepSeqs.back();
+    this->stepSeqs.pop_back();
+    stuStepSeqs man = this->stepSeqs.back();
+    this->stepSeqs.pop_back();
 
-    if (this->stepState.empty())
+    if (this->stepSeqs.empty())
         this->button_regret->setEnabled(false);
 
     this->player.regret({com.curMan->getPos().x(), com.curMan->getPos().y()});
@@ -134,7 +134,7 @@ void Chessboard::regret() {
     man.curMan->setState(Chessman::None);
     this->updateScore();
 
-    if (this->stepState.empty()) {
+    if (this->stepSeqs.empty()) {
         this->pmi_redcircle->setPos(-20, -20);
     } else {
         man.lastMan->clearStep();
@@ -174,7 +174,7 @@ void Chessboard::restart() {
         this->player.setChessman({8, 8});
         this->handleResult({8, 8});
     }
-    this->stepState.clear();
+    this->stepSeqs.clear();
     this->button_regret->setEnabled(false);
 }
 
@@ -190,7 +190,7 @@ void Chessboard::handleResult(Position rspos) {
     Chessman *curMan = this->pmi_chessmen[rspos.first - 1][rspos.second - 1];
 
     this->playState = waiting;
-    this->stepState.push_back({curMan, this->lastMan});
+    this->stepSeqs.push_back({curMan, this->lastMan});
 
     if (this->lastMan)
         this->lastMan->setStep(this->player.getRound() - 1);
@@ -218,7 +218,7 @@ void Chessboard::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         Chessman *curMan = dynamic_cast<Chessman *>(item);
         if (curMan->getState() == Chessman::RedCircle) {
             this->playState = thinking;
-            this->stepState.push_back({curMan, this->lastMan});
+            this->stepSeqs.push_back({curMan, this->lastMan});
 
             curMan->setState(this->sideOfMan);
             Position pos = {curMan->getPos().x(), curMan->getPos().y()};
@@ -278,4 +278,9 @@ void Chessboard::blackReverseChanges(bool b) {
         this->playState = idling;
         this->restart();
     }
+}
+
+void Chessboard::tabWigetChanged(int index) {
+    this->player.setMode((index == 0) ? SolveMode::searchBase : SolveMode::ruleBase);
+    this->player.reload();
 }

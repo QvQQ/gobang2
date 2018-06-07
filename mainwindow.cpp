@@ -37,7 +37,10 @@ void MainWindow::open() {
     QMessageBox::information(this, "23333", "Talk is cheap, show me the code.");
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index) {
+    chessboard->tabWigetChanged(index);
 }

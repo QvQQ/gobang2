@@ -24,6 +24,7 @@ public:
 
     playchess();
 
+    void reload();
     int setChessman(Position pos, const int side);
     int setChessman(Position pos);
     Position solve();

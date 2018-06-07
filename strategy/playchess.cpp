@@ -16,6 +16,11 @@ playchess::playchess() : pr("patterns.txt"), round(0), depth(3) {
     init_rules(NULL);
 }
 
+void playchess::reload() {
+    init_rules(NULL);
+    pr.initialize("patterns.txt");
+}
+
 int playchess::setChessman(Position pos, const int side) {
 
     cout << "No." << (round + 1) << " at (" << pos.first << ", " << pos.second << ") with " << (side == 1 ? "black." : "white.") << endl;
@@ -54,7 +59,7 @@ Position playchess::solve() {  // here
             } catch (int) {
                 flag = true;
             }
-            // 然后移交至searchBase
+        // 然后移交至searchBase
         }
         case SolveMode::searchBase: {
             Board *bd = bd_cre(this->board);
